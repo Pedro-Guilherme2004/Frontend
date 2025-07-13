@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import InputField from "../components/InputField";
+import api from "../services/api"; // <-- IMPORTANTE
 
 const Login = () => {
   const [email, setEmail] = useState("");
@@ -9,59 +10,49 @@ const Login = () => {
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
-  e.preventDefault();
-  setError("");
+    e.preventDefault();
+    setError("");
 
-  try {
-    const response = await fetch("/api/login", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ email, password }),
-    });
+    try {
+      const response = await api.post("/login", { email, password });
+      const data = response.data;
 
-    const data = await response.json();
+      // Salva tokens e card_id localmente
+      localStorage.setItem("access_token", data.access_token);
+      localStorage.setItem("card_id", data.card_id);
 
-    if (!response.ok) {
-      setError(data.error || "Erro ao fazer login");
-      return;
+      if (data.card_id) {
+        try {
+          const resp = await api.get(`/card/${data.card_id}`);
+          const cardData = resp.data;
+          console.log("Dados do card retornado:", cardData);
+
+          // Verifica campos essenciais
+          const camposEssenciais = ["biografia", "nome", "instagram"];
+          const preenchido = camposEssenciais.some((campo) => 
+            cardData && cardData[campo] && String(cardData[campo]).trim() !== ""
+          );
+
+          if (preenchido) {
+            navigate(`/card/view/${data.card_id}`);
+          } else {
+            navigate("/card/create");
+          }
+        } catch (e) {
+          navigate("/card/create");
+        }
+      } else {
+        navigate("/card/create");
+      }
+
+    } catch (err) {
+      if (err.response && err.response.data && err.response.data.error) {
+        setError(err.response.data.error);
+      } else {
+        setError("Erro inesperado.");
+      }
     }
-
-    // Salva tokens e card_id localmente
-    localStorage.setItem("access_token", data.access_token);
-    localStorage.setItem("card_id", data.card_id);
-
-    if (data.card_id) {
-  try {
-    const resp = await fetch(`/api/card/${data.card_id}`);
-    const cardData = await resp.json();
-    console.log("Dados do card retornado:", cardData);
-
-    // Verifica campos essenciais (ajuste os nomes para o seu modelo!)
-    const camposEssenciais = ["biografia", "nome", "instagram"];
-    const preenchido = camposEssenciais.some((campo) => 
-      cardData && cardData[campo] && String(cardData[campo]).trim() !== ""
-    );
-
-    if (preenchido) {
-      navigate(`/card/view/${data.card_id}`);
-    } else {
-      navigate("/card/create");
-    }
-  } catch (e) {
-    navigate("/card/create");
-  }
-} else {
-  navigate("/card/create");
-}
-
-  } catch (err) {
-    console.error(err);
-    setError("Erro inesperado.");
-  }
-};
-
+  };
 
   return (
     <form onSubmit={handleSubmit}>
