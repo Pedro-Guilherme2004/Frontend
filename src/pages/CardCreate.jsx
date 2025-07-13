@@ -1,0 +1,220 @@
+// CardCreate.jsx
+
+import { useState, useEffect } from "react";
+import api from "../services/api";
+import { useNavigate } from "react-router-dom";
+import InputField from "../components/InputField";
+
+// utilitário para converter File em Base64
+const toBase64 = (file) =>
+  new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onload = () => resolve(reader.result);
+    reader.onerror = (error) => reject(error);
+  });
+
+const CardCreate = () => {
+  const [avatarFile, setAvatarFile] = useState(null);
+  const [nome, setNome] = useState("");
+  const [bio, setBio] = useState("");
+  const [instagram, setInstagram] = useState("");
+  const [linkedin, setLinkedin] = useState("");
+  const [site, setSite] = useState("");
+  const [pix, setPix] = useState("");
+  const [emailContato, setEmailContato] = useState("");
+  const [whatsapp, setWhatsapp] = useState("");
+  const [galleryFiles, setGalleryFiles] = useState([]);
+
+  const navigate = useNavigate();
+
+  // ADICIONE ESTE useEffect:
+  useEffect(() => {
+  const card_id = localStorage.getItem("card_id");
+  if (card_id) {
+    fetch(`/api/card/${card_id}`)
+      .then((res) => {
+        if (res.status === 404) {
+          // Cartão não existe mais, limpa o localStorage e permite criar novo
+          localStorage.removeItem("card_id");
+          return null;
+        }
+        return res.json();
+      })
+      .then((data) => {
+        if (data && !data.error) {
+          navigate(`/card/edit/${card_id}`);
+        }
+      });
+  }
+}, [navigate]);
+
+  const handleGalleryChange = (e) => {
+    setGalleryFiles(Array.from(e.target.files));
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    let foto_perfil = null;
+    if (avatarFile) {
+      try {
+        foto_perfil = await toBase64(avatarFile);
+      } catch (err) {
+        console.error("Erro ao converter avatar:", err);
+        return;
+      }
+    }
+
+    const gallery_base64 = [];
+    for (let file of galleryFiles) {
+      try {
+        const b64 = await toBase64(file);
+        gallery_base64.push(b64);
+      } catch (err) {
+        console.error("Erro ao converter galeria:", err);
+      }
+    }
+
+    const dados = {
+      nome,
+      emailContato,
+      whatsapp,
+      card_id: null, // gerado pelo backend
+      foto_perfil,
+      biografia: bio,
+      instagram,
+      linkedin,
+      site,
+      chave_pix: pix,
+      galeria: gallery_base64,
+    };
+
+    try {
+      const resp = await api.post("/card", dados);
+
+      // LOG e checagem de card_id!
+      console.log("Resposta do backend:", resp.data);
+
+      // Se backend retornar card_id (sempre que já existe ou foi criado!)
+      if (resp.data && resp.data.card_id) {
+        // Se o backend avisou que já existe, pode exibir mensagem opcional
+        if (resp.data.message && resp.data.message.includes("Já existe")) {
+          alert("Você já possui um cartão. Redirecionando para seu cartão...");
+        }
+        navigate(`/card/view/${resp.data.card_id}`);
+      } else {
+        alert("Erro: card_id não retornado pelo backend!");
+      }
+    } catch (error) {
+      console.error(
+        "Erro ao criar o cartão:",
+        error.response?.data || error.message
+      );
+      alert(
+        "Erro ao criar o cartão: " +
+          (error.response?.data?.error || error.message)
+      );
+    }
+  };
+
+  return (
+    <form onSubmit={handleSubmit} style={{ maxWidth: 600, margin: "0 auto" }}>
+      <h2>Criar Cartão</h2>
+      {/* Foto de Avatar */}
+      <label>Foto de Avatar:</label>
+      <br />
+      <input
+        type="file"
+        accept="image/*"
+        onChange={(e) => setAvatarFile(e.target.files[0])}
+      />
+      <br />
+      <br />
+
+      {/* Nome */}
+      <InputField
+        label="Nome"
+        type="text"
+        value={nome}
+        onChange={(e) => setNome(e.target.value)}
+      />
+
+      {/* Bio */}
+      <div>
+        <label>Biografia (breve descrição):</label>
+        <br />
+        <textarea
+          value={bio}
+          onChange={(e) => setBio(e.target.value)}
+          rows={3}
+          style={{ width: "100%" }}
+        />
+        <br />
+        <br />
+      </div>
+
+      {/* Links */}
+      <InputField
+        label="Instagram"
+        type="url"
+        value={instagram}
+        onChange={(e) => setInstagram(e.target.value)}
+        required={false}
+      />
+      <InputField
+        label="LinkedIn"
+        type="url"
+        value={linkedin}
+        onChange={(e) => setLinkedin(e.target.value)}
+        required={false}
+      />
+      <InputField
+        label="Site Personalizado"
+        type="url"
+        value={site}
+        onChange={(e) => setSite(e.target.value)}
+        required={false}
+      />
+      <InputField
+        label="Chave Pix"
+        type="text"
+        value={pix}
+        onChange={(e) => setPix(e.target.value)}
+        required={false}
+      />
+
+      {/* Contatos */}
+      <InputField
+        label="Email para contato"
+        type="email"
+        value={emailContato}
+        onChange={(e) => setEmailContato(e.target.value)}
+      />
+      <InputField
+        label="WhatsApp"
+        type="text"
+        value={whatsapp}
+        onChange={(e) => setWhatsapp(e.target.value)}
+      />
+
+      {/* Galeria de Fotos */}
+      <div>
+        <label>Galeria de Fotos (produtos):</label>
+        <br />
+        <input
+          type="file"
+          accept="image/*"
+          multiple
+          onChange={handleGalleryChange}
+        />
+        <br />
+        <br />
+      </div>
+
+      <button type="submit">Salvar</button>
+    </form>
+  );
+};
+
+export default CardCreate;
