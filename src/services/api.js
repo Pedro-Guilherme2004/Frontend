@@ -3,7 +3,8 @@
 import axios from "axios";
 
 const api = axios.create({
-  baseURL: "http://localhost:5000/api", // ajuste se o seu back rodar em outra porta ou prefixo
+  baseURL: "https://frontend-pi-neon-75.vercel.app/", // use o endereço do seu backend Render
 });
 
 export default api;
+
