@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import InputField from "../components/InputField";
+import api from "../services/api"; // <-- Use o mesmo import do Login
 
 const Register = () => {
   const [name, setName] = useState("");
@@ -16,40 +17,32 @@ const Register = () => {
     setError("");
 
     try {
-      const response = await fetch("/api/register", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name, email, password }),
-      });
+      // IMPORTANTE: Use api.post (Axios)
+      const response = await api.post("/register", { nome: name, email, password });
+      // note o nome: name → nome, para bater com o backend em Python/Pydantic
 
-      const data = await response.json();
-
-      if (!response.ok) {
-        // backend pode retornar lista de erros do Pydantic ou objeto com 'error'
-        if (Array.isArray(data) && data.length > 0 && data[0].msg) {
-          setError(data[0].msg);
-        } else if (data.error) {
-          setError(data.error);
-        } else {
-          setError("Erro ao criar usuário");
-        }
+      if (response.status !== 201 && response.status !== 200) {
+        setError(response.data.error || "Erro ao criar usuário");
         return;
       }
 
       // Cadastro ok: redireciona para login
       navigate("/");
     } catch (err) {
-      console.error(err);
-      setError("Erro inesperado");
+      if (err.response && Array.isArray(err.response.data) && err.response.data[0].msg) {
+        setError(err.response.data[0].msg);
+      } else if (err.response && err.response.data && err.response.data.error) {
+        setError(err.response.data.error);
+      } else {
+        setError("Erro inesperado");
+      }
     }
   };
 
   return (
     <form onSubmit={handleSubmit}>
       <h2>Criar Conta</h2>
-
       {error && <p style={{ color: "red" }}>{error}</p>}
-
       <InputField
         label="Nome"
         type="text"
