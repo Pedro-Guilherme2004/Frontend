@@ -13,31 +13,30 @@ const Register = () => {
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
-    setError("");
+  e.preventDefault();
+  setError("");
 
-    try {
-      // Aqui está o campo certo!
-      const response = await api.post("/register", { nome: name, email, password });
+  try {
+    // ENVIE "name" (em inglês)
+    const response = await api.post("/register", { name, email, password });
 
-      // Verifica se status não é sucesso
-      if (response.status !== 201 && response.status !== 200) {
-        setError(response.data.error || "Erro ao criar usuário");
-        return;
-      }
-
-      // Cadastro ok, redireciona para login
-      navigate("/");
-    } catch (err) {
-      if (err.response && Array.isArray(err.response.data) && err.response.data[0]?.msg) {
-        setError(err.response.data[0].msg);
-      } else if (err.response && err.response.data && err.response.data.error) {
-        setError(err.response.data.error);
-      } else {
-        setError("Erro inesperado");
-      }
+    if (response.status !== 201 && response.status !== 200) {
+      setError(response.data.error || "Erro ao criar usuário");
+      return;
     }
-  };
+
+    // Cadastro ok: redireciona para login
+    navigate("/");
+  } catch (err) {
+    if (err.response && Array.isArray(err.response.data) && err.response.data[0].msg) {
+      setError(err.response.data[0].msg);
+    } else if (err.response && err.response.data && err.response.data.error) {
+      setError(err.response.data.error);
+    } else {
+      setError("Erro inesperado");
+    }
+  }
+};
 
   return (
     <form onSubmit={handleSubmit}>
