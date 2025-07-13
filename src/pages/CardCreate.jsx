@@ -32,7 +32,7 @@ const CardCreate = () => {
   useEffect(() => {
   const card_id = localStorage.getItem("card_id");
   if (card_id) {
-    fetch(`/api/card/${card_id}`)
+    fetch(`https://frontend-mu-sand-99.vercel.app/api/card${card_id}`)
       .then((res) => {
         if (res.status === 404) {
           // Cartão não existe mais, limpa o localStorage e permite criar novo
