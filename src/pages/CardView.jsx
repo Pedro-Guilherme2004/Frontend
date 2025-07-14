@@ -47,7 +47,7 @@ const CardView = () => {
         await api.delete(`/card/${dados.card_id}`);
         localStorage.removeItem("card_id");
         alert("Cartão excluído com sucesso!");
-        navigate("/"); // Altere se quiser direcionar para outra rota
+        navigate("/");
       } catch (err) {
         alert("Erro ao excluir o cartão.");
       }
@@ -69,23 +69,24 @@ const CardView = () => {
             className="avatar"
           />
         )}
+
         {/* NOME */}
-        <h2 className="name">{dados.nome}</h2>
+        {dados.nome && (
+          <h2 className="name">{dados.nome}</h2>
+        )}
+
+        {/* E-MAIL DE CONTATO */}
+        {dados.emailContato && (
+          <div style={{ textAlign: "center", color: "white", marginBottom: 8 }}>
+            <strong>Email: {dados.emailContato}</strong>
+          </div>
+        )}
 
         {/* EMPRESA */}
         {dados.empresa && (
           <div className="border-type6">
             <p className="empresa">
               <strong>{dados.empresa}</strong>
-            </p>
-          </div>
-        )}
-
-        {/* EMAIL PARA CONTATO */}
-        {dados.emailContato && (
-          <div className="border-type7">
-            <p className="email">
-              <strong>Email: {dados.emailContato}</strong>
             </p>
           </div>
         )}
@@ -168,30 +169,34 @@ const CardView = () => {
         )}
 
         {/* REDES SOCIAIS */}
-        <p className="section-title white">Redes Sociais:</p>
-        <div className="button-group">
-          {dados.instagram && (
-            <a href={dados.instagram} target="_blank" rel="noopener noreferrer">
-              <button>
-                <img src="/insta.png" alt="Instagram" className="icon" />
-              </button>
-            </a>
-          )}
-          {dados.linkedin && (
-            <a href={dados.linkedin} target="_blank" rel="noopener noreferrer">
-              <button>
-                <img src="/linkedin.png" alt="LinkedIn" className="icon" />
-              </button>
-            </a>
-          )}
-          {dados.site && (
-            <a href={dados.site} target="_blank" rel="noopener noreferrer">
-              <button>
-                <img src="/website.png" alt="Site" className="icon" />
-              </button>
-            </a>
-          )}
-        </div>
+        {(dados.instagram || dados.linkedin || dados.site) && (
+          <>
+            <p className="section-title white">Redes Sociais:</p>
+            <div className="button-group">
+              {dados.instagram && (
+                <a href={dados.instagram} target="_blank" rel="noopener noreferrer">
+                  <button>
+                    <img src="/insta.png" alt="Instagram" className="icon" />
+                  </button>
+                </a>
+              )}
+              {dados.linkedin && (
+                <a href={dados.linkedin} target="_blank" rel="noopener noreferrer">
+                  <button>
+                    <img src="/linkedin.png" alt="LinkedIn" className="icon" />
+                  </button>
+                </a>
+              )}
+              {dados.site && (
+                <a href={dados.site} target="_blank" rel="noopener noreferrer">
+                  <button>
+                    <img src="/website.png" alt="Site" className="icon" />
+                  </button>
+                </a>
+              )}
+            </div>
+          </>
+        )}
 
         {/* GALERIA */}
         {dados.galeria?.length > 0 && (
