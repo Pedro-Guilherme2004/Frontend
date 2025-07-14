@@ -1,4 +1,5 @@
 // CardEdit.jsx
+
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import InputField from "../components/InputField";
@@ -10,12 +11,12 @@ const CardEdit = () => {
   const { id } = useParams();
   const navigate = useNavigate();
 
-  // Estado inicial SEM telefone
+  // Tire o "telefone" daqui!
   const [dados, setDados] = useState({
     nome: "",
     biografia: "",
     empresa: "",
-    whatsapp: "",
+    whatsapp: "",          // <-- Agora só este
     emailContato: "",
     foto_perfil: "",
   });
@@ -69,6 +70,7 @@ const CardEdit = () => {
       if (novaFoto) {
         dadosAtualizados.foto_perfil = novaFoto;
       }
+      // Só envia o campo whatsapp!
       await api.put(`/card/${id}`, dadosAtualizados, {
         headers: {
           Authorization: `Bearer ${token}`,
@@ -131,15 +133,13 @@ const CardEdit = () => {
         value={dados.empresa}
         onChange={handleChange}
       />
-
-      {/* Aqui fica APENAS o WhatsApp */}
+      {/* Agora só tem o campo WhatsApp */}
       <InputField
         label="WhatsApp"
         name="whatsapp"
         value={dados.whatsapp}
         onChange={handleChange}
       />
-
       <InputField
         label="Email para contato"
         name="emailContato"
