@@ -81,6 +81,15 @@ const CardView = () => {
           </div>
         )}
 
+        {/* EMAIL PARA CONTATO */}
+        {dados.emailContato && (
+          <div className="border-type7">
+            <p className="email">
+              <strong>Email: {dados.emailContato}</strong>
+            </p>
+          </div>
+        )}
+
         {/* Botão Editar */}
         <button
           style={{ marginBottom: 10, marginTop: 6 }}

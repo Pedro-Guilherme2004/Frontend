@@ -17,30 +17,28 @@ const toBase64 = (file) =>
 const CardCreate = () => {
   const [avatarFile, setAvatarFile] = useState(null);
   const [nome, setNome] = useState("");
-  const [bio, setBio] = useState("");
+  const [biografia, setBiografia] = useState("");
+  const [empresa, setEmpresa] = useState("");         // Novo campo
+  const [whatsapp, setWhatsapp] = useState("");
+  const [emailContato, setEmailContato] = useState("");
   const [instagram, setInstagram] = useState("");
   const [linkedin, setLinkedin] = useState("");
   const [site, setSite] = useState("");
   const [pix, setPix] = useState("");
-  const [emailContato, setEmailContato] = useState("");
-  const [whatsapp, setWhatsapp] = useState("");
   const [galleryFiles, setGalleryFiles] = useState([]);
 
   const navigate = useNavigate();
 
-  // Corrija a verificação do card existente usando apenas sua API
   useEffect(() => {
     const card_id = localStorage.getItem("card_id");
     if (card_id) {
       api.get(`/card/${card_id}`)
         .then(res => {
           if (res.data && !res.data.error) {
-            // Já existe cartão, redireciona para editar
             navigate(`/card/edit/${card_id}`);
           }
         })
-        .catch(err => {
-          // Se não existe mais, permite criar novo (limpa localStorage)
+        .catch(() => {
           localStorage.removeItem("card_id");
         });
     }
@@ -75,11 +73,11 @@ const CardCreate = () => {
 
     const dados = {
       nome,
-      emailContato,
+      biografia,
+      empresa,               // Novo campo
       whatsapp,
-      card_id: null, // gerado pelo backend
+      emailContato,
       foto_perfil,
-      biografia: bio,
       instagram,
       linkedin,
       site,
@@ -90,9 +88,6 @@ const CardCreate = () => {
     try {
       const resp = await api.post("/card", dados);
 
-      // LOG e checagem de card_id!
-      console.log("Resposta do backend:", resp.data);
-
       if (resp.data && resp.data.card_id) {
         if (resp.data.message && resp.data.message.includes("Já existe")) {
           alert("Você já possui um cartão. Redirecionando para seu cartão...");
@@ -102,14 +97,8 @@ const CardCreate = () => {
         alert("Erro: card_id não retornado pelo backend!");
       }
     } catch (error) {
-      console.error(
-        "Erro ao criar o cartão:",
-        error.response?.data || error.message
-      );
-      alert(
-        "Erro ao criar o cartão: " +
-          (error.response?.data?.error || error.message)
-      );
+      console.error("Erro ao criar o cartão:", error.response?.data || error.message);
+      alert("Erro ao criar o cartão: " + (error.response?.data?.error || error.message));
     }
   };
 
@@ -124,8 +113,7 @@ const CardCreate = () => {
         accept="image/*"
         onChange={(e) => setAvatarFile(e.target.files[0])}
       />
-      <br />
-      <br />
+      <br /><br />
 
       {/* Nome */}
       <InputField
@@ -140,14 +128,37 @@ const CardCreate = () => {
         <label>Biografia (breve descrição):</label>
         <br />
         <textarea
-          value={bio}
-          onChange={(e) => setBio(e.target.value)}
+          value={biografia}
+          onChange={(e) => setBiografia(e.target.value)}
           rows={3}
           style={{ width: "100%" }}
         />
-        <br />
-        <br />
+        <br /><br />
       </div>
+
+      {/* Empresa */}
+      <InputField
+        label="Empresa"
+        type="text"
+        value={empresa}
+        onChange={(e) => setEmpresa(e.target.value)}
+      />
+
+      {/* WhatsApp */}
+      <InputField
+        label="WhatsApp"
+        type="text"
+        value={whatsapp}
+        onChange={(e) => setWhatsapp(e.target.value)}
+      />
+
+      {/* Email para contato */}
+      <InputField
+        label="Email para contato"
+        type="email"
+        value={emailContato}
+        onChange={(e) => setEmailContato(e.target.value)}
+      />
 
       {/* Links */}
       <InputField
@@ -179,20 +190,6 @@ const CardCreate = () => {
         required={false}
       />
 
-      {/* Contatos */}
-      <InputField
-        label="Email para contato"
-        type="email"
-        value={emailContato}
-        onChange={(e) => setEmailContato(e.target.value)}
-      />
-      <InputField
-        label="WhatsApp"
-        type="text"
-        value={whatsapp}
-        onChange={(e) => setWhatsapp(e.target.value)}
-      />
-
       {/* Galeria de Fotos */}
       <div>
         <label>Galeria de Fotos (produtos):</label>
@@ -203,8 +200,7 @@ const CardCreate = () => {
           multiple
           onChange={handleGalleryChange}
         />
-        <br />
-        <br />
+        <br /><br />
       </div>
 
       <button type="submit">Salvar</button>
