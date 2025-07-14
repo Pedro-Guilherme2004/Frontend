@@ -2,19 +2,20 @@
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import InputField from "../components/InputField";
-import api from "../services/api"; // <-- Importa a instância do axios
+import api from "../services/api";
 
-const backendUrl = "https://geticard.onrender.com"; // Troque se seu backend for outro
+const backendUrl = "https://geticard.onrender.com";
 
 const CardEdit = () => {
   const { id } = useParams();
   const navigate = useNavigate();
 
+  // Estado inicial SEM telefone
   const [dados, setDados] = useState({
     nome: "",
     biografia: "",
     empresa: "",
-    telefone: "",
+    whatsapp: "",
     emailContato: "",
     foto_perfil: "",
   });
@@ -28,7 +29,6 @@ const CardEdit = () => {
   useEffect(() => {
     const fetchCard = async () => {
       try {
-        // Usa o axios já com baseURL
         const response = await api.get(`/card/${id}`, {
           headers: { Authorization: `Bearer ${token}` }
         });
@@ -69,7 +69,6 @@ const CardEdit = () => {
       if (novaFoto) {
         dadosAtualizados.foto_perfil = novaFoto;
       }
-      // Usa PUT via axios
       await api.put(`/card/${id}`, dadosAtualizados, {
         headers: {
           Authorization: `Bearer ${token}`,
@@ -116,7 +115,6 @@ const CardEdit = () => {
         value={dados.nome}
         onChange={handleChange}
       />
-      {/* Use textarea para biografia */}
       <div style={{ marginBottom: "1rem" }}>
         <label style={{ fontWeight: "bold" }}>Biografia</label>
         <textarea
@@ -133,12 +131,15 @@ const CardEdit = () => {
         value={dados.empresa}
         onChange={handleChange}
       />
+
+      {/* Aqui fica APENAS o WhatsApp */}
       <InputField
-        label="Telefone"
-        name="telefone"
-        value={dados.telefone}
+        label="WhatsApp"
+        name="whatsapp"
+        value={dados.whatsapp}
         onChange={handleChange}
       />
+
       <InputField
         label="Email para contato"
         name="emailContato"
@@ -147,14 +148,6 @@ const CardEdit = () => {
       />
 
       <button type="submit">Salvar Alterações</button>
-      {/* Se não usar DELETE, remova o botão abaixo */}
-      {/* <button
-        type="button"
-        onClick={handleDelete}
-        style={{ background: "red", color: "white", marginLeft: "1rem" }}
-      >
-        Excluir Cartão
-      </button> */}
     </form>
   );
 };
