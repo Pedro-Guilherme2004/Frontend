@@ -16,24 +16,17 @@ const CardView = () => {
   useEffect(() => {
     const fetchCard = async () => {
       try {
-        const response = await fetch(`/api/card/${id}`);
-        if (response.status === 404) {
+        // Use sempre o api do axios com baseURL já setado!
+        const response = await api.get(`/card/${id}`);
+        setDados(response.data || {});
+        setError(null);
+      } catch (err) {
+        if (err.response && err.response.status === 404) {
           localStorage.removeItem("card_id");
           setError("Cartão não encontrado.");
-          setDados({});
-          setLoading(false);
-          return;
-        }
-        if (!response.ok) {
+        } else {
           setError("Erro ao carregar o cartão.");
-          setDados({});
-          setLoading(false);
-          return;
         }
-        const data = await response.json();
-        setDados(data || {}); // nunca null!
-      } catch (e) {
-        setError("Erro ao carregar o cartão.");
         setDados({});
       } finally {
         setLoading(false);
@@ -45,8 +38,12 @@ const CardView = () => {
   if (error) return <p className="error">{error}</p>;
   if (loading) return <p>Carregando...</p>;
 
-  // O link do cartão
+  // Gera o link do cartão para QRCode e botão copiar
   const cardUrl = `${window.location.origin}/card/view/${dados.card_id}`;
+
+  // Ajusta o caminho da imagem para usar o backend correto (Render em produção)
+  // (troca para o seu domínio Render se necessário)
+  const backendUrl = "https://geticard.onrender.com";
 
   return (
     <div className="card-view-container">
@@ -54,7 +51,11 @@ const CardView = () => {
         {/* FOTO e NOME */}
         {dados.foto_perfil && (
           <img
-            src={`http://localhost:5000${dados.foto_perfil}`}
+            src={
+              dados.foto_perfil.startsWith("http")
+                ? dados.foto_perfil
+                : `${backendUrl}${dados.foto_perfil}`
+            }
             alt="Avatar"
             className="avatar"
           />
