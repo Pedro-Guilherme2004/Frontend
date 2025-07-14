@@ -26,6 +26,7 @@ const Login = () => {
         try {
           // Busca os dados do cartão após login (GET /api/card/:id)
           const resp = await api.get(`/card/${data.card_id}`);
+          console.log("URL chamada:", resp.request?.responseURL);
           const cardData = resp.data;
           console.log("Dados do card retornado:", cardData);
 

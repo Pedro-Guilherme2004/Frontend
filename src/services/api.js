@@ -3,7 +3,7 @@
 import axios from "axios";
 
 const api = axios.create({
-  baseURL: "https://geticard.onrender.com/api", // use o endereço do seu backend Render
+  baseURL: "https://geticard.onrender.com/api", // sem barra no final!
 });
 
 export default api;
