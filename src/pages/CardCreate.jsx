@@ -28,26 +28,23 @@ const CardCreate = () => {
 
   const navigate = useNavigate();
 
-  // ADICIONE ESTE useEffect:
+  // Corrija a verificação do card existente usando apenas sua API
   useEffect(() => {
-  const card_id = localStorage.getItem("card_id");
-  if (card_id) {
-    fetch(`https://frontend-mu-sand-99.vercel.app/api/card${card_id}`)
-      .then((res) => {
-        if (res.status === 404) {
-          // Cartão não existe mais, limpa o localStorage e permite criar novo
+    const card_id = localStorage.getItem("card_id");
+    if (card_id) {
+      api.get(`/card/${card_id}`)
+        .then(res => {
+          if (res.data && !res.data.error) {
+            // Já existe cartão, redireciona para editar
+            navigate(`/card/edit/${card_id}`);
+          }
+        })
+        .catch(err => {
+          // Se não existe mais, permite criar novo (limpa localStorage)
           localStorage.removeItem("card_id");
-          return null;
-        }
-        return res.json();
-      })
-      .then((data) => {
-        if (data && !data.error) {
-          navigate(`/card/edit/${card_id}`);
-        }
-      });
-  }
-}, [navigate]);
+        });
+    }
+  }, [navigate]);
 
   const handleGalleryChange = (e) => {
     setGalleryFiles(Array.from(e.target.files));
@@ -96,9 +93,7 @@ const CardCreate = () => {
       // LOG e checagem de card_id!
       console.log("Resposta do backend:", resp.data);
 
-      // Se backend retornar card_id (sempre que já existe ou foi criado!)
       if (resp.data && resp.data.card_id) {
-        // Se o backend avisou que já existe, pode exibir mensagem opcional
         if (resp.data.message && resp.data.message.includes("Já existe")) {
           alert("Você já possui um cartão. Redirecionando para seu cartão...");
         }
