@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import InputField from "../components/InputField";
-import api from "../services/api"; // <-- IMPORTANTE
+import api from "../services/api"; // <-- Importante!
 
 const Login = () => {
   const [email, setEmail] = useState("");
@@ -14,6 +14,7 @@ const Login = () => {
     setError("");
 
     try {
+      // Faz login: POST /api/login
       const response = await api.post("/login", { email, password });
       const data = response.data;
 
@@ -23,14 +24,16 @@ const Login = () => {
 
       if (data.card_id) {
         try {
+          // Busca os dados do cartão após login (GET /api/card/:id)
           const resp = await api.get(`/card/${data.card_id}`);
           const cardData = resp.data;
           console.log("Dados do card retornado:", cardData);
 
-          // Verifica campos essenciais
+          // Verifica se o cartão tem pelo menos um campo essencial preenchido
           const camposEssenciais = ["biografia", "nome", "instagram"];
-          const preenchido = camposEssenciais.some((campo) => 
-            cardData && cardData[campo] && String(cardData[campo]).trim() !== ""
+          const preenchido = camposEssenciais.some(
+            (campo) =>
+              cardData && cardData[campo] && String(cardData[campo]).trim() !== ""
           );
 
           if (preenchido) {
@@ -39,17 +42,19 @@ const Login = () => {
             navigate("/card/create");
           }
         } catch (e) {
+          // Se falhar ao buscar o card, redireciona para criação
           navigate("/card/create");
         }
       } else {
+        // Se não veio card_id, redireciona para criar cartão
         navigate("/card/create");
       }
-
     } catch (err) {
+      // Trata erros de login
       if (err.response && err.response.data && err.response.data.error) {
         setError(err.response.data.error);
       } else {
-        setError("Erro inesperado.");
+        setError("Erro inesperado ao tentar fazer login.");
       }
     }
   };
