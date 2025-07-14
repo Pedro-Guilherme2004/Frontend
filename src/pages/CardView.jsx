@@ -48,7 +48,7 @@ const CardView = () => {
   return (
   <div className="card-view-container">
     <div className="border-type1">
-      {/* FOTO e NOME */}
+      {/* FOTO de perfil */}
       {dados.foto_perfil && (
         <img
           src={
@@ -60,7 +60,17 @@ const CardView = () => {
           className="avatar"
         />
       )}
+      {/* NOME */}
       <h2 className="name">{dados.nome}</h2>
+
+      {/* EMPRESA (logo após nome) */}
+      {dados.empresa && (
+        <div className="border-type6">
+          <p className="empresa">
+            <strong>{dados.empresa}</strong>
+          </p>
+        </div>
+      )}
 
       {/* Botão Editar */}
       <button
@@ -88,7 +98,6 @@ const CardView = () => {
         >
           Copiar Link
         </button>
-        {/* QR CODE GERADO */}
         <div style={{ marginTop: 18 }}>
           <QRCode value={cardUrl} size={130} />
           <div style={{ fontSize: 13, marginTop: 8 }}>
@@ -96,22 +105,12 @@ const CardView = () => {
           </div>
         </div>
       </div>
-      {/* FIM BLOCO DE LINK */}
 
       {/* BIOGRAFIA */}
       {dados.biografia && (
         <div className="border-type3">
           <p className="bio">
             <strong>{dados.biografia}</strong>
-          </p>
-        </div>
-      )}
-
-      {/* EMPRESA */}
-      {dados.empresa && (
-        <div className="border-type6">
-          <p className="empresa">
-            <strong>Empresa: {dados.empresa}</strong>
           </p>
         </div>
       )}
@@ -134,7 +133,7 @@ const CardView = () => {
         </div>
       )}
 
-      {/* Redes Sociais */}
+      {/* REDES SOCIAIS */}
       <p className="section-title white">Redes Sociais:</p>
       <div className="button-group">
         {dados.instagram && (
@@ -160,7 +159,7 @@ const CardView = () => {
         )}
       </div>
 
-      {/* Galeria */}
+      {/* GALERIA */}
       {dados.galeria?.length > 0 && (
         <>
           <p className="section-title white">Galeria:</p>
@@ -179,4 +178,5 @@ const CardView = () => {
     </div>
   </div>
 );
+
 };
