@@ -1,8 +1,10 @@
-//CardEdit.jsx
-
+// CardEdit.jsx
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import InputField from "../components/InputField";
+import api from "../services/api"; // <-- Importa a instância do axios
+
+const backendUrl = "https://geticard.onrender.com"; // Troque se seu backend for outro
 
 const CardEdit = () => {
   const { id } = useParams();
@@ -26,16 +28,13 @@ const CardEdit = () => {
   useEffect(() => {
     const fetchCard = async () => {
       try {
-        const response = await fetch(`/api/card/${id}`, {
-          headers: { Authorization: `Bearer ${token}` },
+        // Usa o axios já com baseURL
+        const response = await api.get(`/card/${id}`, {
+          headers: { Authorization: `Bearer ${token}` }
         });
-
-        if (!response.ok) throw new Error("Erro ao buscar cartão");
-
-        const data = await response.json();
-        setDados(prev => ({
+        setDados((prev) => ({
           ...prev,
-          ...data
+          ...response.data,
         }));
       } catch (error) {
         setErro("Erro ao carregar cartão.");
@@ -54,7 +53,6 @@ const CardEdit = () => {
   const handleFotoChange = (e) => {
     const file = e.target.files[0];
     if (!file) return;
-
     const reader = new FileReader();
     reader.onloadend = () => {
       setNovaFoto(reader.result);
@@ -66,55 +64,26 @@ const CardEdit = () => {
     e.preventDefault();
     setMensagem("");
     setErro("");
-
     try {
       const dadosAtualizados = { ...dados };
       if (novaFoto) {
         dadosAtualizados.foto_perfil = novaFoto;
       }
-
-      const response = await fetch(`/api/card/${id}`, {
-        method: "PUT",
+      // Usa PUT via axios
+      await api.put(`/card/${id}`, dadosAtualizados, {
         headers: {
-          "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify(dadosAtualizados),
       });
-
-      if (!response.ok) {
-        const errData = await response.json();
-        throw new Error(errData.error || "Erro ao atualizar cartão");
-      }
 
       setMensagem("Cartão atualizado com sucesso!");
       navigate(`/card/view/${id}`);
     } catch (error) {
-      setErro(error.message || "Erro ao atualizar cartão.");
-    }
-  };
-
-  const handleDelete = async () => {
-    const confirmar = window.confirm("Deseja realmente excluir este cartão?");
-    if (!confirmar) return;
-
-    try {
-      const response = await fetch(`/api/card/${id}`, {
-        method: "DELETE",
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-
-      if (!response.ok) {
-        const errData = await response.json();
-        throw new Error(errData.error || "Erro ao deletar cartão");
-      }
-
-      alert("Cartão deletado com sucesso!");
-      navigate("/");
-    } catch (error) {
-      alert(error.message || "Erro ao deletar cartão.");
+      setErro(
+        error?.response?.data?.error ||
+        error?.message ||
+        "Erro ao atualizar cartão."
+      );
     }
   };
 
@@ -128,7 +97,11 @@ const CardEdit = () => {
 
       {dados.foto_perfil && (
         <img
-          src={dados.foto_perfil.startsWith("/") ? "http://localhost:5000" + dados.foto_perfil : dados.foto_perfil}
+          src={
+            dados.foto_perfil.startsWith("http")
+              ? dados.foto_perfil
+              : `${backendUrl}${dados.foto_perfil}`
+          }
           alt="Foto atual"
           style={{ maxWidth: "200px", marginBottom: "1rem" }}
         />
@@ -174,13 +147,14 @@ const CardEdit = () => {
       />
 
       <button type="submit">Salvar Alterações</button>
-      <button
+      {/* Se não usar DELETE, remova o botão abaixo */}
+      {/* <button
         type="button"
         onClick={handleDelete}
         style={{ background: "red", color: "white", marginLeft: "1rem" }}
       >
         Excluir Cartão
-      </button>
+      </button> */}
     </form>
   );
 };
