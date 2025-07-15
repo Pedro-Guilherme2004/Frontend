@@ -13,6 +13,9 @@ const CardView = () => {
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(true);
 
+  // URL do backend (ajuste para o seu ambiente local/desenvolvimento se necessário)
+  const backendUrl = "https://geticard.onrender.com";
+
   useEffect(() => {
     const fetchCard = async () => {
       try {
@@ -37,10 +40,10 @@ const CardView = () => {
   if (error) return <p className="error">{error}</p>;
   if (loading) return <p>Carregando...</p>;
 
+  // Monta o link do cartão para QR Code
   const cardUrl = `${window.location.origin}/card/view/${dados.card_id}`;
-  const backendUrl = "https://geticard.onrender.com";
 
-  // Decide qual foto mostrar (backend, base64, externa ou default)
+  // FOTO DE PERFIL: aceita caminho backend, base64 ou link externo, senão mostra um padrão
   let fotoPerfilSrc = "/user-default.png";
   if (dados.foto_perfil) {
     if (dados.foto_perfil.startsWith("/uploads/")) {
@@ -53,7 +56,25 @@ const CardView = () => {
     }
   }
 
-  // Galeria: pode vir como caminhos (/uploads/...) ou como base64 (data:image...)
+  // Função para deletar cartão
+  async function handleDelete() {
+    if (
+      window.confirm(
+        "Tem certeza que deseja excluir este cartão? Esta ação não pode ser desfeita!"
+      )
+    ) {
+      try {
+        await api.delete(`/card/${dados.card_id}`);
+        localStorage.removeItem("card_id");
+        alert("Cartão excluído com sucesso!");
+        navigate("/");
+      } catch (err) {
+        alert("Erro ao excluir o cartão.");
+      }
+    }
+  }
+
+  // Função para exibir imagens da galeria
   const renderGalleryImg = (img) => {
     if (img.startsWith("/uploads/")) {
       return `${backendUrl}${img}`;
@@ -208,24 +229,6 @@ const CardView = () => {
       </div>
     </div>
   );
-
-  // Função para deletar cartão
-  async function handleDelete() {
-    if (
-      window.confirm(
-        "Tem certeza que deseja excluir este cartão? Esta ação não pode ser desfeita!"
-      )
-    ) {
-      try {
-        await api.delete(`/card/${dados.card_id}`);
-        localStorage.removeItem("card_id");
-        alert("Cartão excluído com sucesso!");
-        navigate("/");
-      } catch (err) {
-        alert("Erro ao excluir o cartão.");
-      }
-    }
-  }
 };
 
 export default CardView;
