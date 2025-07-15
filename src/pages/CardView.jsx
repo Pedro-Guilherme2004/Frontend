@@ -6,22 +6,26 @@ import QRCode from "react-qr-code";
 import api from "../services/api";
 import "../styles/cardedit.css";
 
+const backendUrl = "https://geticard.onrender.com";
+
 const CardView = () => {
   const { id } = useParams();
   const navigate = useNavigate();
-  const [dados, setDados] = useState({});
+  const [dados, setDados] = useState(null);
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  // URL do backend (ajuste para o seu ambiente local/desenvolvimento se necessário)
-  const backendUrl = "https://geticard.onrender.com";
-
   useEffect(() => {
-    const fetchCard = async () => {
+    async function fetchCard() {
       try {
         const response = await api.get(`/card/${id}`);
-        setDados(response.data || {});
-        setError(null);
+        if (response.data && !response.data.error) {
+          setDados(response.data);
+          setError(null);
+        } else {
+          setDados(null);
+          setError("Cartão não encontrado.");
+        }
       } catch (err) {
         if (err.response && err.response.status === 404) {
           localStorage.removeItem("card_id");
@@ -29,16 +33,17 @@ const CardView = () => {
         } else {
           setError("Erro ao carregar o cartão.");
         }
-        setDados({});
+        setDados(null);
       } finally {
         setLoading(false);
       }
-    };
+    }
     fetchCard();
   }, [id]);
 
-  if (error) return <p className="error">{error}</p>;
   if (loading) return <p>Carregando...</p>;
+  if (error) return <p className="error">{error}</p>;
+  if (!dados) return null;
 
   // Monta o link do cartão para QR Code
   const cardUrl = `${window.location.origin}/card/view/${dados.card_id}`;
@@ -76,13 +81,13 @@ const CardView = () => {
 
   // Função para exibir imagens da galeria
   const renderGalleryImg = (img) => {
+    if (!img) return "";
     if (img.startsWith("/uploads/")) {
       return `${backendUrl}${img}`;
     }
     if (img.startsWith("data:image")) {
       return img;
     }
-    // fallback para caminho completo ou outros
     return img;
   };
 
@@ -91,38 +96,32 @@ const CardView = () => {
       <div className="border-type1">
         {/* FOTO de perfil */}
         <img src={fotoPerfilSrc} alt="Avatar" className="avatar" />
-
         {/* NOME */}
-        {dados.nome && <h2 className="name">{dados.nome}</h2>}
-
+        <h2 className="name">{dados.nome || "Sem Nome"}</h2>
         {/* EMAIL */}
         {dados.emailContato && (
           <div className="info-block">
             <strong>Email: {dados.emailContato}</strong>
           </div>
         )}
-
         {/* EMPRESA */}
         {dados.empresa && (
           <div className="info-block">
             <strong>Empresa:</strong> {dados.empresa}
           </div>
         )}
-
         {/* BIOGRAFIA */}
         {dados.biografia && (
           <div className="info-block">
             <strong>Bio:</strong> {dados.biografia}
           </div>
         )}
-
         {/* PIX */}
         {dados.chave_pix && (
           <div className="info-block">
             <strong>Pix:</strong> {dados.chave_pix}
           </div>
         )}
-
         {/* WHATSAPP */}
         {dados.whatsapp && (
           <div className="info-block">
@@ -187,21 +186,21 @@ const CardView = () => {
             <div className="button-group">
               {dados.instagram && (
                 <a href={dados.instagram} target="_blank" rel="noopener noreferrer">
-                  <button>
+                  <button type="button">
                     <img src="/insta.png" alt="Instagram" className="icon" />
                   </button>
                 </a>
               )}
               {dados.linkedin && (
                 <a href={dados.linkedin} target="_blank" rel="noopener noreferrer">
-                  <button>
+                  <button type="button">
                     <img src="/linkedin.png" alt="LinkedIn" className="icon" />
                   </button>
                 </a>
               )}
               {dados.site && (
                 <a href={dados.site} target="_blank" rel="noopener noreferrer">
-                  <button>
+                  <button type="button">
                     <img src="/website.png" alt="Site" className="icon" />
                   </button>
                 </a>
