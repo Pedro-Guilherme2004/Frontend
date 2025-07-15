@@ -92,143 +92,140 @@ const CardView = () => {
   };
 
   return (
-    <div className="card-view-container">
-       <div className="border-type1">
-       {/* TOPO: AVATAR + NOME */}
-         <div className="avatar-nome-block">
-           <img src={fotoPerfilSrc} alt="Avatar" className="avatar" />
-         <h2 className="name">{dados.nome || "Sem Nome"}</h2>
-        </div>
-        {/* EMAIL */}
-        {dados.emailContato && (
-          <div className="info-block">
-            <strong>Email: {dados.emailContato}</strong>
-          </div>
-        )}
-        {/* EMPRESA */}
-        {dados.empresa && (
-          <div className="info-block">
-            <strong>Empresa:</strong> {dados.empresa}
-          </div>
-        )}
-        {/* BIOGRAFIA */}
-        {dados.biografia && (
-          <div className="info-block">
-            <strong>Bio:</strong> {dados.biografia}
-          </div>
-        )}
-        {/* PIX */}
-        {dados.chave_pix && (
-          <div className="info-block">
-            <strong>Pix:</strong> {dados.chave_pix}
-          </div>
-        )}
-        {/* WHATSAPP */}
-        {dados.whatsapp && (
-          <div className="info-block">
-            <strong>WhatsApp:</strong> {dados.whatsapp}
-          </div>
-        )}
-
-        {/* Botão Editar */}
-        <button
-          style={{ marginBottom: 10, marginTop: 6 }}
-          onClick={() => navigate(`/card/edit/${dados.card_id}`)}
-        >
-          Editar Cartão
-        </button>
-
-        {/* Botão Excluir */}
-        <button
-          style={{
-            marginBottom: 18,
-            background: "#b30d0d",
-            color: "white",
-            borderRadius: "8px",
-            border: "none",
-            padding: "8px 20px",
-            cursor: "pointer",
-          }}
-          onClick={handleDelete}
-        >
-          Excluir Cartão
-        </button>
-
-        {/* BLOCO DE LINK PARA NFC/QR CODE */}
-        <div style={{ margin: "20px 0", textAlign: "center" }}>
-          <strong>Link do Cartão:</strong>
-          <input
-            type="text"
-            value={cardUrl}
-            readOnly
-            style={{ width: "90%", margin: "8px 0" }}
-            onClick={(e) => e.target.select()}
-          />
-          <button
-            onClick={() => {
-              navigator.clipboard.writeText(cardUrl);
-              alert("Link copiado para área de transferência!");
-            }}
-          >
-            Copiar Link
-          </button>
-          <div style={{ marginTop: 18 }}>
-            <QRCode value={cardUrl} size={130} />
-            <div style={{ fontSize: 13, marginTop: 8 }}>
-              Escaneie o QR code para acessar este cartão!
-            </div>
-          </div>
-        </div>
-
-        {/* REDES SOCIAIS */}
-        {(dados.instagram || dados.linkedin || dados.site) && (
-          <>
-            <p className="section-title white">Redes Sociais:</p>
-            <div className="button-group">
-              {dados.instagram && (
-                <a href={dados.instagram} target="_blank" rel="noopener noreferrer">
-                  <button type="button">
-                    <img src="/insta.png" alt="Instagram" className="icon" />
-                  </button>
-                </a>
-              )}
-              {dados.linkedin && (
-                <a href={dados.linkedin} target="_blank" rel="noopener noreferrer">
-                  <button type="button">
-                    <img src="/linkedin.png" alt="LinkedIn" className="icon" />
-                  </button>
-                </a>
-              )}
-              {dados.site && (
-                <a href={dados.site} target="_blank" rel="noopener noreferrer">
-                  <button type="button">
-                    <img src="/website.png" alt="Site" className="icon" />
-                  </button>
-                </a>
-              )}
-            </div>
-          </>
-        )}
-
-        {/* GALERIA */}
-        {Array.isArray(dados.galeria) && dados.galeria.length > 0 && (
-          <>
-            <p className="section-title white">Galeria:</p>
-            <div className="gallery">
-              {dados.galeria.map((img, idx) => (
-                <img
-                  key={idx}
-                  src={renderGalleryImg(img)}
-                  alt={`produto-${idx}`}
-                  className="gallery-img"
-                />
-              ))}
-            </div>
-          </>
-        )}
+  <div className="card-view-container">
+    <div className="border-type1">
+      {/* TOPO: AVATAR + NOME */}
+      <div className="avatar-nome-block">
+        <img src={fotoPerfilSrc} alt="Avatar" className="avatar" />
+        <h2 className="name">{dados.nome || "Sem Nome"}</h2>
       </div>
+
+      {/* BLOCO DE INFORMAÇÕES */}
+      {dados.emailContato && (
+        <div className="info-block">
+          <strong>Email: </strong>{dados.emailContato}
+        </div>
+      )}
+      {dados.empresa && (
+        <div className="info-block">
+          <strong>Empresa: </strong>{dados.empresa}
+        </div>
+      )}
+      {dados.biografia && (
+        <div className="info-block">
+          <strong>Bio: </strong>{dados.biografia}
+        </div>
+      )}
+      {dados.chave_pix && (
+        <div className="info-block">
+          <strong>Pix: </strong>{dados.chave_pix}
+        </div>
+      )}
+      {dados.whatsapp && (
+        <div className="info-block">
+          <strong>WhatsApp: </strong>{dados.whatsapp}
+        </div>
+      )}
+
+      {/* Botão Editar */}
+      <button
+        style={{ marginBottom: 10, marginTop: 10 }}
+        onClick={() => navigate(`/card/edit/${dados.card_id}`)}
+      >
+        Editar Cartão
+      </button>
+
+      {/* Botão Excluir */}
+      <button
+        style={{
+          marginBottom: 18,
+          background: "#b30d0d",
+          color: "white",
+          borderRadius: "8px",
+          border: "none",
+          padding: "8px 20px",
+          cursor: "pointer",
+        }}
+        onClick={handleDelete}
+      >
+        Excluir Cartão
+      </button>
+
+      {/* BLOCO DE LINK PARA NFC/QR CODE */}
+      <div style={{ margin: "20px 0", textAlign: "center" }}>
+        <strong>Link do Cartão:</strong>
+        <input
+          type="text"
+          value={cardUrl}
+          readOnly
+          style={{ width: "90%", margin: "8px 0" }}
+          onClick={e => e.target.select()}
+        />
+        <button
+          onClick={() => {
+            navigator.clipboard.writeText(cardUrl);
+            alert("Link copiado para área de transferência!");
+          }}
+        >
+          Copiar Link
+        </button>
+        <div style={{ marginTop: 18 }}>
+          <QRCode value={cardUrl} size={130} />
+          <div style={{ fontSize: 13, marginTop: 8 }}>
+            Escaneie o QR code para acessar este cartão!
+          </div>
+        </div>
+      </div>
+
+      {/* REDES SOCIAIS */}
+      {(dados.instagram || dados.linkedin || dados.site) && (
+        <>
+          <p className="section-title white">Redes Sociais:</p>
+          <div className="button-group">
+            {dados.instagram && (
+              <a href={dados.instagram} target="_blank" rel="noopener noreferrer">
+                <button type="button">
+                  <img src="/insta.png" alt="Instagram" className="icon" />
+                </button>
+              </a>
+            )}
+            {dados.linkedin && (
+              <a href={dados.linkedin} target="_blank" rel="noopener noreferrer">
+                <button type="button">
+                  <img src="/linkedin.png" alt="LinkedIn" className="icon" />
+                </button>
+              </a>
+            )}
+            {dados.site && (
+              <a href={dados.site} target="_blank" rel="noopener noreferrer">
+                <button type="button">
+                  <img src="/website.png" alt="Site" className="icon" />
+                </button>
+              </a>
+            )}
+          </div>
+        </>
+      )}
+
+      {/* GALERIA */}
+      {Array.isArray(dados.galeria) && dados.galeria.length > 0 && (
+        <>
+          <p className="section-title white">Galeria:</p>
+          <div className="gallery">
+            {dados.galeria.map((img, idx) => (
+              <img
+                key={idx}
+                src={renderGalleryImg(img)}
+                alt={`produto-${idx}`}
+                className="gallery-img"
+              />
+            ))}
+          </div>
+        </>
+      )}
     </div>
-  );
+  </div>
+);
 };
 
 export default CardView;

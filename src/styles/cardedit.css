@@ -150,7 +150,7 @@ html, body {
   .button-group button img.icon { width: 48px; height: 48px; }
 }
 
-/* Pequeno ajuste para input de link não quebrar */
+/* Ajuste para input de link não quebrar */
 input[type="text"][readonly] {
   background: #fffefa;
   border: 1px solid #dbdbdb;
