@@ -40,66 +40,72 @@ const CardView = () => {
   const cardUrl = `${window.location.origin}/card/view/${dados.card_id}`;
   const backendUrl = "https://geticard.onrender.com";
 
-  // --- Função para excluir cartão
-  const handleDelete = async () => {
-    if (window.confirm("Tem certeza que deseja excluir este cartão? Esta ação não pode ser desfeita!")) {
-      try {
-        await api.delete(`/card/${dados.card_id}`);
-        localStorage.removeItem("card_id");
-        alert("Cartão excluído com sucesso!");
-        navigate("/");
-      } catch (err) {
-        alert("Erro ao excluir o cartão.");
-      }
-    }
-  };
-
-  // Decide qual foto mostrar
+  // Decide qual foto mostrar (backend, base64, externa ou default)
   let fotoPerfilSrc = "/user-default.png";
   if (dados.foto_perfil) {
-    fotoPerfilSrc = dados.foto_perfil.startsWith("http")
-      ? dados.foto_perfil
-      : `${backendUrl}${dados.foto_perfil}`;
+    if (dados.foto_perfil.startsWith("/uploads/")) {
+      fotoPerfilSrc = `${backendUrl}${dados.foto_perfil}`;
+    } else if (
+      dados.foto_perfil.startsWith("data:image") ||
+      dados.foto_perfil.startsWith("http")
+    ) {
+      fotoPerfilSrc = dados.foto_perfil;
+    }
   }
+
+  // Galeria: pode vir como caminhos (/uploads/...) ou como base64 (data:image...)
+  const renderGalleryImg = (img) => {
+    if (img.startsWith("/uploads/")) {
+      return `${backendUrl}${img}`;
+    }
+    if (img.startsWith("data:image")) {
+      return img;
+    }
+    // fallback para caminho completo ou outros
+    return img;
+  };
 
   return (
     <div className="card-view-container">
       <div className="border-type1">
-
-        {/* FOTO de perfil ou padrão */}
-        <img
-          src={fotoPerfilSrc}
-          alt="Avatar"
-          className="avatar"
-        />
+        {/* FOTO de perfil */}
+        <img src={fotoPerfilSrc} alt="Avatar" className="avatar" />
 
         {/* NOME */}
-        {dados.nome && (
-          <h2 className="name">{dados.nome}</h2>
-        )}
+        {dados.nome && <h2 className="name">{dados.nome}</h2>}
 
-        {/* E-MAIL DE CONTATO */}
+        {/* EMAIL */}
         {dados.emailContato && (
-          <div style={{ textAlign: "center", color: "white", marginBottom: 8 }}>
+          <div className="info-block">
             <strong>Email: {dados.emailContato}</strong>
           </div>
         )}
 
-        {/* --- BLOCOS ARREDONDADOS DE INFORMAÇÕES --- */}
+        {/* EMPRESA */}
         {dados.empresa && (
-          <div className="info-block">{dados.empresa}</div>
-        )}
-        {dados.biografia && (
-          <div className="info-block">{dados.biografia}</div>
-        )}
-        {dados.chave_pix && (
           <div className="info-block">
-            Pix: {dados.chave_pix}
+            <strong>Empresa:</strong> {dados.empresa}
           </div>
         )}
+
+        {/* BIOGRAFIA */}
+        {dados.biografia && (
+          <div className="info-block">
+            <strong>Bio:</strong> {dados.biografia}
+          </div>
+        )}
+
+        {/* PIX */}
+        {dados.chave_pix && (
+          <div className="info-block">
+            <strong>Pix:</strong> {dados.chave_pix}
+          </div>
+        )}
+
+        {/* WHATSAPP */}
         {dados.whatsapp && (
           <div className="info-block">
-            WhatsApp: {dados.whatsapp}
+            <strong>WhatsApp:</strong> {dados.whatsapp}
           </div>
         )}
 
@@ -120,7 +126,7 @@ const CardView = () => {
             borderRadius: "8px",
             border: "none",
             padding: "8px 20px",
-            cursor: "pointer"
+            cursor: "pointer",
           }}
           onClick={handleDelete}
         >
@@ -135,7 +141,7 @@ const CardView = () => {
             value={cardUrl}
             readOnly
             style={{ width: "90%", margin: "8px 0" }}
-            onClick={e => e.target.select()}
+            onClick={(e) => e.target.select()}
           />
           <button
             onClick={() => {
@@ -184,14 +190,14 @@ const CardView = () => {
         )}
 
         {/* GALERIA */}
-        {dados.galeria?.length > 0 && (
+        {Array.isArray(dados.galeria) && dados.galeria.length > 0 && (
           <>
             <p className="section-title white">Galeria:</p>
             <div className="gallery">
               {dados.galeria.map((img, idx) => (
                 <img
                   key={idx}
-                  src={`data:image/png;base64,${img.split(",")[1]}`}
+                  src={renderGalleryImg(img)}
                   alt={`produto-${idx}`}
                   className="gallery-img"
                 />
@@ -202,6 +208,24 @@ const CardView = () => {
       </div>
     </div>
   );
+
+  // Função para deletar cartão
+  async function handleDelete() {
+    if (
+      window.confirm(
+        "Tem certeza que deseja excluir este cartão? Esta ação não pode ser desfeita!"
+      )
+    ) {
+      try {
+        await api.delete(`/card/${dados.card_id}`);
+        localStorage.removeItem("card_id");
+        alert("Cartão excluído com sucesso!");
+        navigate("/");
+      } catch (err) {
+        alert("Erro ao excluir o cartão.");
+      }
+    }
+  }
 };
 
 export default CardView;

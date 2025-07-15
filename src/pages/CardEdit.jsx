@@ -7,15 +7,6 @@ import api from "../services/api";
 
 const backendUrl = "https://geticard.onrender.com";
 
-// Utilitário para converter File em Base64
-const toBase64 = (file) =>
-  new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.readAsDataURL(file);
-    reader.onload = () => resolve(reader.result);
-    reader.onerror = (error) => reject(error);
-  });
-
 const CardEdit = () => {
   const { id } = useParams();
   const navigate = useNavigate();
@@ -64,16 +55,12 @@ const CardEdit = () => {
     setDados({ ...dados, [e.target.name]: e.target.value });
   };
 
+  // Atualiza nova foto para upload
   const handleFotoChange = (e) => {
-    const file = e.target.files[0];
-    if (!file) return;
-    const reader = new FileReader();
-    reader.onloadend = () => {
-      setNovaFoto(reader.result);
-    };
-    reader.readAsDataURL(file);
+    setNovaFoto(e.target.files[0]);
   };
 
+  // Atualiza galeria para upload
   const handleGalleryChange = (e) => {
     setNovaGaleria(Array.from(e.target.files));
   };
@@ -82,31 +69,33 @@ const CardEdit = () => {
     e.preventDefault();
     setMensagem("");
     setErro("");
+
     try {
-      const dadosAtualizados = { ...dados };
+      const formData = new FormData();
+      formData.append("nome", dados.nome);
+      formData.append("biografia", dados.biografia);
+      formData.append("empresa", dados.empresa);
+      formData.append("whatsapp", dados.whatsapp);
+      formData.append("emailContato", dados.emailContato);
+      formData.append("instagram", dados.instagram);
+      formData.append("linkedin", dados.linkedin);
+      formData.append("site", dados.site);
+      formData.append("chave_pix", dados.chave_pix);
 
-      // Atualiza avatar se escolhido
+      // Foto de perfil (só adiciona se foi alterada)
       if (novaFoto) {
-        dadosAtualizados.foto_perfil = novaFoto;
+        formData.append("foto_perfil", novaFoto);
       }
 
-      // Atualiza galeria se escolhido
-      if (novaGaleria.length > 0) {
-        const gallery_base64 = [];
-        for (let file of novaGaleria) {
-          try {
-            const b64 = await toBase64(file);
-            gallery_base64.push(b64);
-          } catch (err) {
-            console.error("Erro ao converter galeria:", err);
-          }
-        }
-        dadosAtualizados.galeria = gallery_base64;
+      // Nova galeria (se houver upload novo)
+      for (let file of novaGaleria) {
+        formData.append("galeria", file);
       }
 
-      await api.put(`/card/${id}`, dadosAtualizados, {
+      await api.put(`/card/${id}`, formData, {
         headers: {
           Authorization: `Bearer ${token}`,
+          "Content-Type": "multipart/form-data",
         },
       });
 
@@ -125,7 +114,7 @@ const CardEdit = () => {
   if (erro) return <p style={{ color: "red" }}>{erro}</p>;
 
   return (
-    <form onSubmit={handleSubmit}>
+    <form onSubmit={handleSubmit} encType="multipart/form-data">
       <h2>Editar Cartão</h2>
       {mensagem && <p style={{ color: "green" }}>{mensagem}</p>}
 
