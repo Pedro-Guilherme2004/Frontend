@@ -176,3 +176,23 @@
     height: 48px;
   }
 }
+
+/* Bloco de informações arredondado (tipo botões grandes) */
+.info-block {
+  background: #99b5bcad;
+  border: 2px solid #d2e8e9;
+  border-radius: 18px;
+  padding: 12px 0;
+  margin: 12px 0 0 0;
+  font-size: 1rem;
+  font-weight: bold;
+  text-align: center;
+  color: #001b35;
+  box-shadow: 0 2px 8px 0 #0001;
+  width: 100%;
+}
+
+.info-block:not(:first-child) {
+  margin-top: 10px;
+}
+

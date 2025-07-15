@@ -82,12 +82,21 @@ const CardView = () => {
           </div>
         )}
 
-        {/* EMPRESA */}
+        {/* --- BLOCOS ARREDONDADOS DE INFORMAÇÕES --- */}
         {dados.empresa && (
-          <div className="border-type6">
-            <p className="empresa">
-              <strong>{dados.empresa}</strong>
-            </p>
+          <div className="info-block">{dados.empresa}</div>
+        )}
+        {dados.biografia && (
+          <div className="info-block">{dados.biografia}</div>
+        )}
+        {dados.chave_pix && (
+          <div className="info-block">
+            Pix: {dados.chave_pix}
+          </div>
+        )}
+        {dados.whatsapp && (
+          <div className="info-block">
+            WhatsApp: {dados.whatsapp}
           </div>
         )}
 
@@ -140,33 +149,6 @@ const CardView = () => {
             </div>
           </div>
         </div>
-
-        {/* BIOGRAFIA */}
-        {dados.biografia && (
-          <div className="border-type3">
-            <p className="bio">
-              <strong>{dados.biografia}</strong>
-            </p>
-          </div>
-        )}
-
-        {/* PIX */}
-        {dados.chave_pix && (
-          <div className="border-type4">
-            <p className="pix">
-              <strong>Pix: {dados.chave_pix}</strong>
-            </p>
-          </div>
-        )}
-
-        {/* WHATSAPP */}
-        {dados.whatsapp && (
-          <div className="border-type5">
-            <p className="whatsapp">
-              <strong>WhatsApp: {dados.whatsapp}</strong>
-            </p>
-          </div>
-        )}
 
         {/* REDES SOCIAIS */}
         {(dados.instagram || dados.linkedin || dados.site) && (
