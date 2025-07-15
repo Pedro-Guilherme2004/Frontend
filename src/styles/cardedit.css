@@ -1,12 +1,22 @@
+html, body {
+  height: 100%;
+  min-height: 100vh;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  overflow-x: hidden;
+  background: linear-gradient(to bottom, #001b35 0%, #1c3e5e 50%, #171e24 100%);
+}
+
 /* Container centralizado no topo da tela */
 .card-view-container {
-  padding: 1rem;
+  padding: 2rem 1rem 1rem 1rem;
   display: flex;
   justify-content: center;
-  align-items: flex-start; /* Alinha no topo, nunca centraliza verticalmente */
+  align-items: flex-start; /* topo */
   width: 100%;
   min-height: 100vh;
-  background: linear-gradient(to bottom, #001b35 0%, #1c3e5e 50%, #171e24 100%);
+  background: none;
 }
 
 /* Cartão principal cresce conforme conteúdo (NÃO limita altura!) */
@@ -25,9 +35,6 @@
   flex-direction: column;
   gap: 1rem;
   box-sizing: border-box;
-  /* Se quiser rolar só dentro do cartão (opcional, normalmente não precisa): */
-  /* max-height: 90vh;
-     overflow-y: auto; */
 }
 
 /* Avatar e Nome */
@@ -60,54 +67,12 @@
   color: white;
 }
 
-/* BORDER TYPE3: Bio */
-.border-type3 {
-  background: #ffffff85;
-  border: 2px solid #fff;
-  border-radius: 16px;
-  padding: 0.75rem;
-  text-align: center;
-}
-
-.bio {
-  margin: 0;
-  font-size: 0.75rem;
-  color: #001b35;
-  font-weight: bold;
-  word-wrap: break-word;
-}
-
-/* BORDER TYPE4: Pix */
-.border-type4 {
-  background: #ffffff85;
-  border: 2px solid #fff;
-  border-radius: 16px;
-  padding: 0.5rem;
-  text-align: center;
-}
-
-.pix {
-  margin: 0;
-  font-size: 0.75rem;
-  color: #001b35;
-  font-weight: bold;
-}
-
-/* BORDER TYPE5: WhatsApp */
-.border-type5 {
-  background: #ffffff85;
-  border: 2px solid #fff;
-  border-radius: 16px;
-  padding: 0.5rem;
-  text-align: center;
-}
-
-.whatsapp {
-  margin: 0;
-  font-size: 0.75rem;
-  color: #001b35;
-  font-weight: bold;
-}
+.border-type3 { background: #ffffff85; border: 2px solid #fff; border-radius: 16px; padding: 0.75rem; text-align: center; }
+.bio { margin: 0; font-size: 0.75rem; color: #001b35; font-weight: bold; word-wrap: break-word; }
+.border-type4 { background: #ffffff85; border: 2px solid #fff; border-radius: 16px; padding: 0.5rem; text-align: center; }
+.pix { margin: 0; font-size: 0.75rem; color: #001b35; font-weight: bold; }
+.border-type5 { background: #ffffff85; border: 2px solid #fff; border-radius: 16px; padding: 0.5rem; text-align: center; }
+.whatsapp { margin: 0; font-size: 0.75rem; color: #001b35; font-weight: bold; }
 
 /* Botões */
 .button-group {
@@ -116,7 +81,6 @@
   gap: 0.5rem;
   margin-top: 0rem;
 }
-
 .button-group button {
   width: 96px;
   height: 96px;
@@ -130,12 +94,7 @@
   justify-content: center;
   transition: transform 0.2s;
 }
-
-.button-group button:hover {
-  transform: scale(1.05);
-}
-
-/* Ícones */
+.button-group button:hover { transform: scale(1.05); }
 .button-group button img.icon {
   width: 64px;
   height: 64px;
@@ -149,7 +108,6 @@
   gap: 0.5rem;
   margin-top: 0rem;
 }
-
 .gallery-img {
   width: 100%;
   height: 80px;
@@ -159,25 +117,10 @@
 
 /* Responsividade */
 @media (max-width: 400px) {
-  .border-type1 {
-    max-width: 100%;
-    padding: 0.5rem;
-  }
-
-  .button-group {
-    flex-direction: column;
-    align-items: center;
-  }
-
-  .button-group button {
-    width: 80px;
-    height: 80px;
-  }
-
-  .button-group button img.icon {
-    width: 48px;
-    height: 48px;
-  }
+  .border-type1 { max-width: 100%; padding: 0.5rem; }
+  .button-group { flex-direction: column; align-items: center; }
+  .button-group button { width: 80px; height: 80px; }
+  .button-group button img.icon { width: 48px; height: 48px; }
 }
 
 /* Bloco de informações arredondado */
@@ -194,7 +137,4 @@
   box-shadow: 0 2px 8px 0 #0001;
   width: 100%;
 }
-
-.info-block:not(:first-child) {
-  margin-top: 10px;
-}
+.info-block:not(:first-child) { margin-top: 10px; }
