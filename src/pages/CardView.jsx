@@ -54,21 +54,24 @@ const CardView = () => {
     }
   };
 
+  // Decide qual foto mostrar
+  let fotoPerfilSrc = "/user-default.png";
+  if (dados.foto_perfil) {
+    fotoPerfilSrc = dados.foto_perfil.startsWith("http")
+      ? dados.foto_perfil
+      : `${backendUrl}${dados.foto_perfil}`;
+  }
+
   return (
     <div className="card-view-container">
       <div className="border-type1">
-        {/* FOTO de perfil */}
-        {dados.foto_perfil && (
-          <img
-            src={
-              dados.foto_perfil.startsWith("http")
-                ? dados.foto_perfil
-                : `${backendUrl}${dados.foto_perfil}`
-            }
-            alt="Avatar"
-            className="avatar"
-          />
-        )}
+
+        {/* FOTO de perfil ou padrão */}
+        <img
+          src={fotoPerfilSrc}
+          alt="Avatar"
+          className="avatar"
+        />
 
         {/* NOME */}
         {dados.nome && (
