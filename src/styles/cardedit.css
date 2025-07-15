@@ -22,38 +22,50 @@ html, body {
 /* Cartão fixo */
 .border-type1 {
   background-image:
-    linear-gradient(rgba(0, 90, 86, 0.671), rgba(0, 36, 34, 0.89)),
+    linear-gradient(rgba(0, 90, 86, 0.68), rgba(0, 36, 34, 0.93)),
     linear-gradient(135deg, #a0f1e6, #b3dbf6, #d0e8f8);
   border: 2px solid transparent;
   border-radius: 32px;
-  padding: 1.25rem 1rem 1.5rem 1rem;
-  max-width: 360px;
+  padding: 1.5rem 1.2rem 2rem 1.2rem;
+  max-width: 370px;
   width: 100%;
   display: flex;
   flex-direction: column;
-  gap: 0.6rem;
+  gap: 0.5rem;
   box-sizing: border-box;
   position: relative;
+  box-shadow: 0 8px 24px 0 #001b3540;
 }
 
-/* Avatar e Nome */
+/* Bloco topo: Avatar + Nome */
+.avatar-nome-block {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 16px;
+  border-bottom: 1.5px solid #aeeeee40;
+  padding-bottom: 12px;
+}
+
+/* Avatar */
 .avatar {
   width: 104px;
   height: 104px;
   border-radius: 50%;
   object-fit: cover;
-  margin: 0 auto 0.6rem auto;
+  margin: 10px auto 6px auto;
   display: block;
-  box-shadow: 0 0 8px #0004;
+  box-shadow: 0 0 12px #0002;
   background: #e9f7f7;
+  border: 3px solid #e9f7f7;
 }
 
 .name {
-  margin: 0 0 0.6rem 0;
+  margin: 0 0 0.5rem 0;
   text-align: center;
   font-size: 1.6rem;
   color: white;
-  text-shadow: 0 0 4px #0008;
+  text-shadow: 0 0 6px #001b3550;
   font-weight: bold;
   letter-spacing: 1px;
 }
@@ -73,10 +85,10 @@ html, body {
 
 /* Blocos informativos */
 .info-block {
-  background: #99b5bcad;
+  background: #a3bcc5b6;
   border: 2px solid #d2e8e9;
   border-radius: 18px;
-  padding: 10px 0;
+  padding: 11px 0;
   margin: 7px 0 0 0;
   font-size: 1rem;
   font-weight: bold;
@@ -84,6 +96,7 @@ html, body {
   color: #001b35;
   box-shadow: 0 2px 8px 0 #0001;
   width: 100%;
+  word-break: break-word;
 }
 .info-block:not(:first-child) { margin-top: 8px; }
 
@@ -99,9 +112,10 @@ html, body {
   height: 80px;
   object-fit: cover;
   border-radius: 8px;
+  box-shadow: 0 0 4px #0002;
 }
 
-/* Botões */
+/* Botões sociais */
 .button-group {
   display: flex;
   justify-content: space-between;
@@ -129,9 +143,21 @@ html, body {
 }
 
 /* Responsividade */
-@media (max-width: 400px) {
-  .border-type1 { max-width: 100%; padding: 0.5rem; }
+@media (max-width: 450px) {
+  .border-type1 { max-width: 100%; padding: 0.7rem; }
   .button-group { flex-direction: column; align-items: center; }
   .button-group button { width: 80px; height: 80px; }
   .button-group button img.icon { width: 48px; height: 48px; }
+}
+
+/* Pequeno ajuste para input de link não quebrar */
+input[type="text"][readonly] {
+  background: #fffefa;
+  border: 1px solid #dbdbdb;
+  border-radius: 6px;
+  font-size: 0.98rem;
+  padding: 6px 7px;
+  margin-bottom: 7px;
+  width: 90%;
+  text-align: center;
 }

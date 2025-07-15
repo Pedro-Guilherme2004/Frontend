@@ -93,11 +93,12 @@ const CardView = () => {
 
   return (
     <div className="card-view-container">
-      <div className="border-type1">
-        {/* FOTO de perfil */}
-        <img src={fotoPerfilSrc} alt="Avatar" className="avatar" />
-        {/* NOME */}
-        <h2 className="name">{dados.nome || "Sem Nome"}</h2>
+       <div className="border-type1">
+       {/* TOPO: AVATAR + NOME */}
+         <div className="avatar-nome-block">
+           <img src={fotoPerfilSrc} alt="Avatar" className="avatar" />
+         <h2 className="name">{dados.nome || "Sem Nome"}</h2>
+        </div>
         {/* EMAIL */}
         {dados.emailContato && (
           <div className="info-block">
