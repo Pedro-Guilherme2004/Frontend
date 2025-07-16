@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import QRCode from "react-qr-code";
 import api from "../services/api";
+import jwt_decode from "jwt-decode"; // <--- IMPORTANTE!
 import "../styles/cardedit.css";
 
 const backendUrl = "https://geticard.onrender.com";
@@ -14,9 +15,7 @@ const CardView = () => {
   const [dados, setDados] = useState(null);
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(true);
-
-  // Pegue o email do usuário logado (ajuste para o nome da sua chave!)
-  const emailLogado = localStorage.getItem("user_email");
+  const [isOwner, setIsOwner] = useState(false);
 
   useEffect(() => {
     async function fetchCard() {
@@ -43,6 +42,22 @@ const CardView = () => {
     }
     fetchCard();
   }, [id]);
+
+  // Checa se o usuário autenticado é o dono do cartão
+  useEffect(() => {
+    const token = localStorage.getItem("access_token");
+    if (token && dados && dados.emailContato) {
+      try {
+        const decoded = jwt_decode(token);
+        // O backend coloca o email em 'sub' do token JWT
+        setIsOwner(decoded.sub === dados.emailContato);
+      } catch (e) {
+        setIsOwner(false);
+      }
+    } else {
+      setIsOwner(false);
+    }
+  }, [dados]);
 
   if (loading) return <p>Carregando...</p>;
   if (error) return <p className="error">{error}</p>;
@@ -128,7 +143,7 @@ const CardView = () => {
         )}
 
         {/* Botões só aparecem para o dono do cartão */}
-        {emailLogado && emailLogado === dados.emailContato && (
+        {isOwner && (
           <>
             <button
               style={{ marginBottom: 10, marginTop: 10 }}
