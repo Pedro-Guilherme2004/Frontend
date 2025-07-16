@@ -54,7 +54,7 @@ const CardView = () => {
           setEmailMismatch(false);
         } else {
           setIsOwner(false);
-          setEmailMismatch(true); // <-- aqui ativa o aviso!
+          setEmailMismatch(true);
         }
       } catch (e) {
         setIsOwner(false);
@@ -66,9 +66,8 @@ const CardView = () => {
     }
   }, [dados]);
 
-  // Função para salvar os dados no localStorage e voltar para cardcreate
+  // Função para salvar dados do cartão e retornar ao create sem perder os campos
   const handleBackToEdit = () => {
-    // Salva os campos principais no localStorage (ajuste conforme necessário)
     localStorage.setItem(
       "card_temp_data",
       JSON.stringify({
@@ -81,7 +80,7 @@ const CardView = () => {
         linkedin: dados.linkedin || "",
         site: dados.site || "",
         chave_pix: dados.chave_pix || "",
-        // galeria e foto_perfil geralmente são arquivos e não podem ser restaurados assim
+        // galeria/foto_perfil não são restauráveis como files!
       })
     );
     navigate("/card/create");
@@ -105,12 +104,9 @@ const CardView = () => {
     }
   }
 
-  // Função para deletar cartão
   async function handleDelete() {
     if (
-      window.confirm(
-        "Tem certeza que deseja excluir este cartão? Esta ação não pode ser desfeita!"
-      )
+      window.confirm("Tem certeza que deseja excluir este cartão? Esta ação não pode ser desfeita!")
     ) {
       try {
         await api.delete(`/card/${dados.card_id}`);
@@ -135,177 +131,177 @@ const CardView = () => {
   };
 
   return (
-  <div className="card-view-container">
-    <div className="border-type1">
+    <div className="card-view-container">
+      <div className="border-type1">
 
-      {/* AVISO de e-mail diferente do cadastro */}
-      {emailMismatch && (
-        <div style={{
-          background: "#ffe6e6",
-          border: "1px solid #d66767",
-          borderRadius: 8,
-          padding: "16px 18px",
-          color: "#822",
-          marginBottom: 18,
-          textAlign: "center"
-        }}>
-          <b>O e-mail do cartão não é o mesmo do seu login!</b><br />
-          Só é possível editar ou excluir o cartão se o e-mail cadastrado no cartão for igual ao do seu login.<br /><br />
+        {/* AVISO de e-mail diferente do cadastro */}
+        {emailMismatch && (
+          <div style={{
+            background: "#ffe6e6",
+            border: "1px solid #d66767",
+            borderRadius: 8,
+            padding: "16px 18px",
+            color: "#822",
+            marginBottom: 18,
+            textAlign: "center"
+          }}>
+            <b>O e-mail do cartão não é o mesmo do seu login!</b><br />
+            Só é possível editar ou excluir o cartão se o e-mail cadastrado no cartão for igual ao do seu login.<br /><br />
+            <button
+              style={{
+                background: "#c62828",
+                color: "#fff",
+                border: "none",
+                borderRadius: 6,
+                padding: "8px 18px",
+                fontWeight: 600,
+                marginTop: 10,
+                cursor: "pointer"
+              }}
+              onClick={handleBackToEdit}
+            >
+              Voltar e corrigir e-mail do cartão
+            </button>
+            <div style={{ fontSize: 13, color: "#a88", marginTop: 8 }}>
+              Seus dados preenchidos serão mantidos!
+            </div>
+          </div>
+        )}
+
+        {/* TOPO: AVATAR + NOME */}
+        <div className="avatar-nome-block">
+          <img src={fotoPerfilSrc} alt="Avatar" className="avatar" />
+          <h2 className="name">{dados.nome || "Sem Nome"}</h2>
+        </div>
+
+        {/* BLOCO DE INFORMAÇÕES */}
+        {dados.emailContato && (
+          <div className="info-block">
+            <strong>Email: </strong>{dados.emailContato}
+          </div>
+        )}
+        {dados.empresa && (
+          <div className="info-block">
+            <strong>Empresa: </strong>{dados.empresa}
+          </div>
+        )}
+        {dados.biografia && (
+          <div className="info-block">
+            <strong>Bio: </strong>{dados.biografia}
+          </div>
+        )}
+        {dados.chave_pix && (
+          <div className="info-block">
+            <strong>Pix: </strong>{dados.chave_pix}
+          </div>
+        )}
+        {dados.whatsapp && (
+          <div className="info-block">
+            <strong>WhatsApp: </strong>{dados.whatsapp}
+          </div>
+        )}
+
+        {/* Botões só aparecem para o dono do cartão */}
+        {isOwner && (
+          <>
+            <button
+              style={{ marginBottom: 10, marginTop: 10 }}
+              onClick={() => navigate(`/card/edit/${dados.card_id}`)}
+            >
+              Editar Cartão
+            </button>
+            <button
+              style={{
+                marginBottom: 18,
+                background: "#b30d0d",
+                color: "white",
+                borderRadius: "8px",
+                border: "none",
+                padding: "8px 20px",
+                cursor: "pointer",
+              }}
+              onClick={handleDelete}
+            >
+              Excluir Cartão
+            </button>
+          </>
+        )}
+
+        {/* BLOCO DE LINK PARA NFC/QR CODE */}
+        <div style={{ margin: "20px 0", textAlign: "center" }}>
+          <strong>Link do Cartão:</strong>
+          <input
+            type="text"
+            value={cardUrl}
+            readOnly
+            style={{ width: "90%", margin: "8px 0" }}
+            onClick={e => e.target.select()}
+          />
           <button
-            style={{
-              background: "#c62828",
-              color: "#fff",
-              border: "none",
-              borderRadius: 6,
-              padding: "8px 18px",
-              fontWeight: 600,
-              marginTop: 10,
-              cursor: "pointer"
+            onClick={() => {
+              navigator.clipboard.writeText(cardUrl);
+              alert("Link copiado para área de transferência!");
             }}
-            onClick={handleBackToEdit}
           >
-            Voltar e corrigir e-mail do cartão
+            Copiar Link
           </button>
-          <div style={{ fontSize: 13, color: "#a88", marginTop: 8 }}>
-            Seus dados preenchidos serão mantidos!
+          <div style={{ marginTop: 18 }}>
+            <QRCode value={cardUrl} size={130} />
+            <div style={{ fontSize: 13, marginTop: 8 }}>
+              Escaneie o QR code para acessar este cartão!
+            </div>
           </div>
         </div>
-      )}
 
-      {/* TOPO: AVATAR + NOME */}
-      <div className="avatar-nome-block">
-        <img src={fotoPerfilSrc} alt="Avatar" className="avatar" />
-        <h2 className="name">{dados.nome || "Sem Nome"}</h2>
+        {/* REDES SOCIAIS */}
+        {(dados.instagram || dados.linkedin || dados.site) && (
+          <>
+            <p className="section-title white">Redes Sociais:</p>
+            <div className="button-group">
+              {dados.instagram && (
+                <a href={dados.instagram} target="_blank" rel="noopener noreferrer">
+                  <button type="button">
+                    <img src="/insta.png" alt="Instagram" className="icon" />
+                  </button>
+                </a>
+              )}
+              {dados.linkedin && (
+                <a href={dados.linkedin} target="_blank" rel="noopener noreferrer">
+                  <button type="button">
+                    <img src="/linkedin.png" alt="LinkedIn" className="icon" />
+                  </button>
+                </a>
+              )}
+              {dados.site && (
+                <a href={dados.site} target="_blank" rel="noopener noreferrer">
+                  <button type="button">
+                    <img src="/website.png" alt="Site" className="icon" />
+                  </button>
+                </a>
+              )}
+            </div>
+          </>
+        )}
+
+        {/* GALERIA */}
+        {Array.isArray(dados.galeria) && dados.galeria.length > 0 && (
+          <>
+            <p className="section-title white">Galeria:</p>
+            <div className="gallery">
+              {dados.galeria.map((img, idx) => (
+                <img
+                  key={idx}
+                  src={renderGalleryImg(img)}
+                  alt={`produto-${idx}`}
+                  className="gallery-img"
+                />
+              ))}
+            </div>
+          </>
+        )}
       </div>
-
-      {/* BLOCO DE INFORMAÇÕES */}
-      {dados.emailContato && (
-        <div className="info-block">
-          <strong>Email: </strong>{dados.emailContato}
-        </div>
-      )}
-      {dados.empresa && (
-        <div className="info-block">
-          <strong>Empresa: </strong>{dados.empresa}
-        </div>
-      )}
-      {dados.biografia && (
-        <div className="info-block">
-          <strong>Bio: </strong>{dados.biografia}
-        </div>
-      )}
-      {dados.chave_pix && (
-        <div className="info-block">
-          <strong>Pix: </strong>{dados.chave_pix}
-        </div>
-      )}
-      {dados.whatsapp && (
-        <div className="info-block">
-          <strong>WhatsApp: </strong>{dados.whatsapp}
-        </div>
-      )}
-
-      {/* Botões só aparecem para o dono do cartão */}
-      {isOwner && (
-        <>
-          <button
-            style={{ marginBottom: 10, marginTop: 10 }}
-            onClick={() => navigate(`/card/edit/${dados.card_id}`)}
-          >
-            Editar Cartão
-          </button>
-          <button
-            style={{
-              marginBottom: 18,
-              background: "#b30d0d",
-              color: "white",
-              borderRadius: "8px",
-              border: "none",
-              padding: "8px 20px",
-              cursor: "pointer",
-            }}
-            onClick={handleDelete}
-          >
-            Excluir Cartão
-          </button>
-        </>
-      )}
-
-      {/* BLOCO DE LINK PARA NFC/QR CODE */}
-      <div style={{ margin: "20px 0", textAlign: "center" }}>
-        <strong>Link do Cartão:</strong>
-        <input
-          type="text"
-          value={cardUrl}
-          readOnly
-          style={{ width: "90%", margin: "8px 0" }}
-          onClick={e => e.target.select()}
-        />
-        <button
-          onClick={() => {
-            navigator.clipboard.writeText(cardUrl);
-            alert("Link copiado para área de transferência!");
-          }}
-        >
-          Copiar Link
-        </button>
-        <div style={{ marginTop: 18 }}>
-          <QRCode value={cardUrl} size={130} />
-          <div style={{ fontSize: 13, marginTop: 8 }}>
-            Escaneie o QR code para acessar este cartão!
-          </div>
-        </div>
-      </div>
-
-      {/* REDES SOCIAIS */}
-      {(dados.instagram || dados.linkedin || dados.site) && (
-        <>
-          <p className="section-title white">Redes Sociais:</p>
-          <div className="button-group">
-            {dados.instagram && (
-              <a href={dados.instagram} target="_blank" rel="noopener noreferrer">
-                <button type="button">
-                  <img src="/insta.png" alt="Instagram" className="icon" />
-                </button>
-              </a>
-            )}
-            {dados.linkedin && (
-              <a href={dados.linkedin} target="_blank" rel="noopener noreferrer">
-                <button type="button">
-                  <img src="/linkedin.png" alt="LinkedIn" className="icon" />
-                </button>
-              </a>
-            )}
-            {dados.site && (
-              <a href={dados.site} target="_blank" rel="noopener noreferrer">
-                <button type="button">
-                  <img src="/website.png" alt="Site" className="icon" />
-                </button>
-              </a>
-            )}
-          </div>
-        </>
-      )}
-
-      {/* GALERIA */}
-      {Array.isArray(dados.galeria) && dados.galeria.length > 0 && (
-        <>
-          <p className="section-title white">Galeria:</p>
-          <div className="gallery">
-            {dados.galeria.map((img, idx) => (
-              <img
-                key={idx}
-                src={renderGalleryImg(img)}
-                alt={`produto-${idx}`}
-                className="gallery-img"
-              />
-            ))}
-          </div>
-        </>
-      )}
     </div>
-  </div>
-);
+  );
 };
 
 export default CardView;

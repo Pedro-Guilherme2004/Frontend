@@ -20,6 +20,41 @@ const CardCreate = () => {
 
   const navigate = useNavigate();
 
+  // Recupera dados temporários do cartão se existirem
+  useEffect(() => {
+    const temp = localStorage.getItem("card_temp_data");
+    if (temp) {
+      try {
+        const obj = JSON.parse(temp);
+        setNome(obj.nome || "");
+        setBiografia(obj.biografia || "");
+        setEmpresa(obj.empresa || "");
+        setWhatsapp(obj.whatsapp || "");
+        setEmailContato(obj.emailContato || "");
+        setInstagram(obj.instagram || "");
+        setLinkedin(obj.linkedin || "");
+        setSite(obj.site || "");
+        setPix(obj.chave_pix || "");
+      } catch {}
+      // Só limpa os temporários depois de preencher, assim evita que volte em branco por engano
+      localStorage.removeItem("card_temp_data");
+    }
+  }, []);
+
+  // Sempre que mudar algo, salva no localStorage (exceto arquivos)
+  useEffect(() => {
+    const tempData = {
+      nome, biografia, empresa, whatsapp, emailContato,
+      instagram, linkedin, site, chave_pix: pix
+    };
+    localStorage.setItem("card_temp_data", JSON.stringify(tempData));
+    // OBS: você pode comentar a linha acima se quiser salvar só no clique do "Voltar"
+  }, [
+    nome, biografia, empresa, whatsapp, emailContato,
+    instagram, linkedin, site, pix
+  ]);
+
+  // Protege contra múltiplos cartões para o mesmo usuário
   useEffect(() => {
     const card_id = localStorage.getItem("card_id");
     if (card_id) {
@@ -71,6 +106,8 @@ const CardCreate = () => {
         if (resp.data.message && resp.data.message.includes("Já existe")) {
           alert("Você já possui um cartão. Redirecionando para seu cartão...");
         }
+        // Limpa temporários ao criar cartão com sucesso
+        localStorage.removeItem("card_temp_data");
         navigate(`/card/view/${resp.data.card_id}`);
       } else {
         alert("Erro: card_id não retornado pelo backend!");
