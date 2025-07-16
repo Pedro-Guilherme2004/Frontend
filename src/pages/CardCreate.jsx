@@ -54,12 +54,10 @@ const CardCreate = () => {
     formData.append("site", site);
     formData.append("chave_pix", pix);
 
-    // Avatar/foto de perfil
     if (avatarFile) {
       formData.append("foto_perfil", avatarFile);
     }
 
-    // Galeria (vários arquivos)
     for (let file of galleryFiles) {
       formData.append("galeria", file);
     }
@@ -84,108 +82,130 @@ const CardCreate = () => {
   };
 
   return (
-    <form onSubmit={handleSubmit} style={{ maxWidth: 600, margin: "0 auto" }} encType="multipart/form-data">
-      <h2>Criar Cartão</h2>
-      {/* Foto de Avatar */}
-      <label>Foto de Avatar:</label>
-      <br />
-      <input
-        type="file"
-        accept="image/*"
-        onChange={e => setAvatarFile(e.target.files[0])}
-      />
-      <br /><br />
-
-      {/* Nome */}
-      <InputField
-        label="Nome"
-        type="text"
-        value={nome}
-        onChange={e => setNome(e.target.value)}
-      />
-
-      {/* Bio */}
-      <div>
-        <label>Biografia (breve descrição):</label>
-        <br />
-        <textarea
-          value={biografia}
-          onChange={e => setBiografia(e.target.value)}
-          rows={3}
-          style={{ width: "100%" }}
-        />
-        <br /><br />
+    <>
+      <div
+        style={{
+          background: "#f7eabb",
+          border: "1px solid #e5c252",
+          borderRadius: 7,
+          padding: "14px 18px",
+          marginBottom: 18,
+          color: "#444",
+          fontWeight: 500,
+          fontSize: 15,
+          boxShadow: "0 2px 6px #0001"
+        }}
+      >
+        <strong>Atenção:</strong> Só será possível <b>editar</b> ou <b>excluir</b> seu cartão se você estiver logado com o mesmo <b>e-mail</b> cadastrado abaixo.<br />
+        <span style={{ fontSize: 13, color: "#a66" }}>
+          Guarde bem este e-mail! Ele será usado para autenticação e proteção do seu cartão.
+        </span>
       </div>
 
-      {/* Empresa */}
-      <InputField
-        label="Empresa"
-        type="text"
-        value={empresa}
-        onChange={e => setEmpresa(e.target.value)}
-      />
+      <form onSubmit={handleSubmit} style={{ maxWidth: 600, margin: "0 auto" }} encType="multipart/form-data">
+        <h2>Criar Cartão</h2>
 
-      {/* WhatsApp */}
-      <InputField
-        label="WhatsApp"
-        type="text"
-        value={whatsapp}
-        onChange={e => setWhatsapp(e.target.value)}
-      />
-
-      {/* Email para contato */}
-      <InputField
-        label="Email para contato"
-        type="email"
-        value={emailContato}
-        onChange={e => setEmailContato(e.target.value)}
-      />
-
-      {/* Links */}
-      <InputField
-        label="Instagram"
-        type="url"
-        value={instagram}
-        onChange={e => setInstagram(e.target.value)}
-        required={false}
-      />
-      <InputField
-        label="LinkedIn"
-        type="url"
-        value={linkedin}
-        onChange={e => setLinkedin(e.target.value)}
-        required={false}
-      />
-      <InputField
-        label="Site Personalizado"
-        type="url"
-        value={site}
-        onChange={e => setSite(e.target.value)}
-        required={false}
-      />
-      <InputField
-        label="Chave Pix"
-        type="text"
-        value={pix}
-        onChange={e => setPix(e.target.value)}
-        required={false}
-      />
-
-      {/* Galeria de Fotos */}
-      <div>
-        <label>Galeria de Fotos (produtos):</label>
+        {/* Foto de Avatar */}
+        <label>Foto de Avatar:</label>
         <br />
         <input
           type="file"
           accept="image/*"
-          multiple
-          onChange={handleGalleryChange}
+          onChange={e => setAvatarFile(e.target.files[0])}
         />
         <br /><br />
-      </div>
 
-      <button type="submit">Salvar</button>
-    </form>
+        {/* Nome */}
+        <InputField
+          label="Nome"
+          type="text"
+          value={nome}
+          onChange={e => setNome(e.target.value)}
+        />
+
+        {/* Bio */}
+        <div>
+          <label>Biografia (breve descrição):</label>
+          <br />
+          <textarea
+            value={biografia}
+            onChange={e => setBiografia(e.target.value)}
+            rows={3}
+            style={{ width: "100%" }}
+          />
+          <br /><br />
+        </div>
+
+        {/* Empresa */}
+        <InputField
+          label="Empresa"
+          type="text"
+          value={empresa}
+          onChange={e => setEmpresa(e.target.value)}
+        />
+
+        {/* WhatsApp */}
+        <InputField
+          label="WhatsApp"
+          type="text"
+          value={whatsapp}
+          onChange={e => setWhatsapp(e.target.value)}
+        />
+
+        {/* Email para contato */}
+        <InputField
+          label="Email para contato"
+          type="email"
+          value={emailContato}
+          onChange={e => setEmailContato(e.target.value)}
+        />
+
+        {/* Links */}
+        <InputField
+          label="Instagram"
+          type="url"
+          value={instagram}
+          onChange={e => setInstagram(e.target.value)}
+          required={false}
+        />
+        <InputField
+          label="LinkedIn"
+          type="url"
+          value={linkedin}
+          onChange={e => setLinkedin(e.target.value)}
+          required={false}
+        />
+        <InputField
+          label="Site Personalizado"
+          type="url"
+          value={site}
+          onChange={e => setSite(e.target.value)}
+          required={false}
+        />
+        <InputField
+          label="Chave Pix"
+          type="text"
+          value={pix}
+          onChange={e => setPix(e.target.value)}
+          required={false}
+        />
+
+        {/* Galeria de Fotos */}
+        <div>
+          <label>Galeria de Fotos (produtos):</label>
+          <br />
+          <input
+            type="file"
+            accept="image/*"
+            multiple
+            onChange={handleGalleryChange}
+          />
+          <br /><br />
+        </div>
+
+        <button type="submit">Salvar</button>
+      </form>
+    </>
   );
 };
 
