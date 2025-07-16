@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import QRCode from "react-qr-code";
 import api from "../services/api";
-import jwtDecode from "jwt-decode"; // <-- CORRETO para a maioria dos setups!
+import { jwtDecode } from "jwt-decode"; // <-- CORRETO para a maioria dos setups!
 import "../styles/cardedit.css";
 
 const backendUrl = "https://geticard.onrender.com";
