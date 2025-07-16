@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import QRCode from "react-qr-code";
 import api from "../services/api";
-import jwt_decode from "jwt-decode"; // <--- IMPORTANTE!
+import jwtDecode from "jwt-decode"; // <-- CORRETO para a maioria dos setups!
 import "../styles/cardedit.css";
 
 const backendUrl = "https://geticard.onrender.com";
@@ -48,7 +48,7 @@ const CardView = () => {
     const token = localStorage.getItem("access_token");
     if (token && dados && dados.emailContato) {
       try {
-        const decoded = jwt_decode(token);
+        const decoded = jwtDecode(token);
         // O backend coloca o email em 'sub' do token JWT
         setIsOwner(decoded.sub === dados.emailContato);
       } catch (e) {
