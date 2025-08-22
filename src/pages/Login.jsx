@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import InputField from "../components/InputField";
 import api from "../services/api"; // <-- Importante!
+import "../styles/login.css"; // <--- novo
 
 const Login = () => {
   const [email, setEmail] = useState("");
