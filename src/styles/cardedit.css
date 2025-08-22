@@ -1,30 +1,73 @@
-/* ===== Layout exclusivo do CardEdit ===== */
-.edit-page {
-  min-height: auto;
-  display: flex;
-  flex-direction: column;
+/* Garante que o cartão NUNCA estoure a largura e recorte cantos arredondados */
+.border-type1 {
+  max-width: 420px;         /* era 370px, pode ajustar aqui */
+  width: 100%;
+  margin: 24px auto;
+  overflow: hidden;         /* recorta qualquer coisa que escape das bordas */
 }
 
-.edit-main {
-  flex: 1;
+/* Container da página do cartão */
+.card-view-container {
+  padding: 24px 16px;
   display: flex;
   justify-content: center;
   align-items: flex-start;
-  padding: 2rem 1rem;
+  width: 100%;
+  min-height: auto;         /* não força altura */
 }
 
-.edit-card {
-  width: 100%;
-  max-width: 760px;
+/* ÍCONES E IMAGENS – nunca deixarem estourar */
+.card-view-container img,
+.edit-page img,
+.create-page img {
+  max-width: 100%;
+  height: auto;
+  display: block;
 }
 
-/* Rodapé apenas do CardEdit */
-.edit-footer {
+/* QR centralizado e com espaçamento */
+.qr-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+/* BOTÕES DE REDES SOCIAIS – tamanho consistente */
+.button-group {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 8px;
+}
+
+.button-group a { display: inline-flex; }
+
+.button-group button {
+  width: 72px;
+  height: 72px;
+  border-radius: 14px;
+  border: 1px solid rgba(255,255,255,.15);
+  background: rgba(255,255,255,.08);
+  padding: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: transform .15s ease;
+}
+
+.button-group button:hover { transform: translateY(-2px); }
+
+.button-group button img.icon {
+  width: 36px;
+  height: 36px;
+  object-fit: contain;
+}
+
+/* Inputs dentro do cartão (link) ocuparem a largura do cartão */
+.border-type1 input[type="text"][readonly] {
   width: 100%;
-  text-align: center;
-  padding: 14px 12px;
-  color: #fff;
-  background: linear-gradient(90deg, rgba(0,0,0,0.28), rgba(0,0,0,0.18));
-  border-top: 1px solid rgba(255,255,255,0.08);
-  font-size: 0.95rem;
+  box-sizing: border-box;
 }
