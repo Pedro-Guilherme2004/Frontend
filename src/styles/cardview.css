@@ -1,0 +1,54 @@
+/* Layout exclusivo da página do cartão (CardView) */
+.card-page {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.card-main {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  padding: 2rem 1rem;
+}
+
+/* Rodapé do CardView */
+.card-footer {
+  width: 100%;
+  text-align: center;
+  padding: 14px 12px;
+  color: #fff;
+  background: linear-gradient(90deg, rgba(0,0,0,0.28), rgba(0,0,0,0.18));
+  border-top: 1px solid rgba(255,255,255,0.08);
+  font-size: 0.95rem;
+}
+
+.card-footer .brand {
+  font-weight: 700;
+  letter-spacing: 0.4px;
+}
+
+.card-footer .links {
+  display: inline-flex;
+  gap: 12px;
+  margin-left: 8px;
+}
+
+.card-footer .links a,
+.card-footer .links button {
+  background: none;
+  border: none;
+  color: #bfefff;
+  text-decoration: none;
+  cursor: pointer;
+  padding: 0;
+  font: inherit;
+  opacity: 0.95;
+}
+
+.card-footer .links a:hover,
+.card-footer .links button:hover {
+  text-decoration: underline;
+  opacity: 1;
+}

@@ -1,9 +1,9 @@
-// CardEdit.jsx
-
+// src/pages/CardEdit.jsx
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import InputField from "../components/InputField";
 import api from "../services/api";
+import "../styles/cardeditpage.css"; // <-- NOVO: layout exclusivo desta página
 
 const backendUrl = "https://geticard.onrender.com";
 
@@ -55,15 +55,8 @@ const CardEdit = () => {
     setDados({ ...dados, [e.target.name]: e.target.value });
   };
 
-  // Atualiza nova foto para upload
-  const handleFotoChange = (e) => {
-    setNovaFoto(e.target.files[0]);
-  };
-
-  // Atualiza galeria para upload
-  const handleGalleryChange = (e) => {
-    setNovaGaleria(Array.from(e.target.files));
-  };
+  const handleFotoChange = (e) => setNovaFoto(e.target.files[0]);
+  const handleGalleryChange = (e) => setNovaGaleria(Array.from(e.target.files));
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -82,15 +75,8 @@ const CardEdit = () => {
       formData.append("site", dados.site);
       formData.append("chave_pix", dados.chave_pix);
 
-      // Foto de perfil (só adiciona se foi alterada)
-      if (novaFoto) {
-        formData.append("foto_perfil", novaFoto);
-      }
-
-      // Nova galeria (se houver upload novo)
-      for (let file of novaGaleria) {
-        formData.append("galeria", file);
-      }
+      if (novaFoto) formData.append("foto_perfil", novaFoto);
+      for (let file of novaGaleria) formData.append("galeria", file);
 
       await api.put(`/card/${id}`, formData, {
         headers: {
@@ -110,121 +96,135 @@ const CardEdit = () => {
     }
   };
 
-  if (loading) return <p>Carregando...</p>;
-  if (erro) return <p style={{ color: "red" }}>{erro}</p>;
-
   return (
-    <form onSubmit={handleSubmit} encType="multipart/form-data">
-      <h2>Editar Cartão</h2>
-      {mensagem && <p style={{ color: "green" }}>{mensagem}</p>}
+    <div className="edit-page">
+      <main className="edit-main">
+        <div className="edit-card">
+          {loading ? (
+            <p>Carregando...</p>
+          ) : erro ? (
+            <p style={{ color: "red" }}>{erro}</p>
+          ) : (
+            <form onSubmit={handleSubmit} encType="multipart/form-data">
+              <h2>Editar Cartão</h2>
+              {mensagem && <p style={{ color: "green" }}>{mensagem}</p>}
 
-      {/* Avatar Atual */}
-      {dados.foto_perfil && (
-        <img
-          src={
-            dados.foto_perfil.startsWith("http")
-              ? dados.foto_perfil
-              : `${backendUrl}${dados.foto_perfil}`
-          }
-          alt="Foto atual"
-          style={{ maxWidth: "200px", marginBottom: "1rem" }}
-        />
-      )}
-      {/* Trocar foto */}
-      <label>Nova Foto:</label>
-      <input type="file" accept="image/*" onChange={handleFotoChange} />
+              {/* Avatar Atual */}
+              {dados.foto_perfil && (
+                <img
+                  src={
+                    dados.foto_perfil.startsWith("http")
+                      ? dados.foto_perfil
+                      : `${backendUrl}${dados.foto_perfil}`
+                  }
+                  alt="Foto atual"
+                  style={{ maxWidth: "200px", marginBottom: "1rem", display: "block" }}
+                />
+              )}
 
-      {/* Nome */}
-      <InputField
-        label="Nome"
-        name="nome"
-        value={dados.nome}
-        onChange={handleChange}
-      />
+              {/* Trocar foto */}
+              <label>Nova Foto:</label>
+              <input type="file" accept="image/*" onChange={handleFotoChange} />
 
-      {/* Biografia */}
-      <div style={{ marginBottom: "1rem" }}>
-        <label style={{ fontWeight: "bold" }}>Biografia</label>
-        <textarea
-          name="biografia"
-          value={dados.biografia}
-          onChange={handleChange}
-          rows={3}
-          style={{ width: "100%", padding: "6px" }}
-        />
-      </div>
+              {/* Nome */}
+              <InputField
+                label="Nome"
+                name="nome"
+                value={dados.nome}
+                onChange={handleChange}
+              />
 
-      {/* Empresa */}
-      <InputField
-        label="Empresa"
-        name="empresa"
-        value={dados.empresa}
-        onChange={handleChange}
-      />
+              {/* Biografia */}
+              <div style={{ marginBottom: "1rem" }}>
+                <label style={{ fontWeight: "bold" }}>Biografia</label>
+                <textarea
+                  name="biografia"
+                  value={dados.biografia}
+                  onChange={handleChange}
+                  rows={3}
+                  style={{ width: "100%", padding: "6px" }}
+                />
+              </div>
 
-      {/* WhatsApp */}
-      <InputField
-        label="WhatsApp"
-        name="whatsapp"
-        value={dados.whatsapp}
-        onChange={handleChange}
-      />
+              {/* Empresa */}
+              <InputField
+                label="Empresa"
+                name="empresa"
+                value={dados.empresa}
+                onChange={handleChange}
+              />
 
-      {/* Email para contato */}
-      <InputField
-        label="Email para contato"
-        name="emailContato"
-        value={dados.emailContato}
-        onChange={handleChange}
-      />
+              {/* WhatsApp */}
+              <InputField
+                label="WhatsApp"
+                name="whatsapp"
+                value={dados.whatsapp}
+                onChange={handleChange}
+              />
 
-      {/* Instagram */}
-      <InputField
-        label="Instagram"
-        name="instagram"
-        value={dados.instagram}
-        onChange={handleChange}
-      />
+              {/* Email para contato */}
+              <InputField
+                label="Email para contato"
+                name="emailContato"
+                value={dados.emailContato}
+                onChange={handleChange}
+              />
 
-      {/* LinkedIn */}
-      <InputField
-        label="LinkedIn"
-        name="linkedin"
-        value={dados.linkedin}
-        onChange={handleChange}
-      />
+              {/* Instagram */}
+              <InputField
+                label="Instagram"
+                name="instagram"
+                value={dados.instagram}
+                onChange={handleChange}
+              />
 
-      {/* Site */}
-      <InputField
-        label="Site Personalizado"
-        name="site"
-        value={dados.site}
-        onChange={handleChange}
-      />
+              {/* LinkedIn */}
+              <InputField
+                label="LinkedIn"
+                name="linkedin"
+                value={dados.linkedin}
+                onChange={handleChange}
+              />
 
-      {/* Chave Pix */}
-      <InputField
-        label="Chave Pix"
-        name="chave_pix"
-        value={dados.chave_pix}
-        onChange={handleChange}
-      />
+              {/* Site */}
+              <InputField
+                label="Site Personalizado"
+                name="site"
+                value={dados.site}
+                onChange={handleChange}
+              />
 
-      {/* Galeria de Fotos */}
-      <div>
-        <label>Galeria de Fotos (produtos):</label>
-        <br />
-        <input
-          type="file"
-          accept="image/*"
-          multiple
-          onChange={handleGalleryChange}
-        />
-        <br /><br />
-      </div>
+              {/* Chave Pix */}
+              <InputField
+                label="Chave Pix"
+                name="chave_pix"
+                value={dados.chave_pix}
+                onChange={handleChange}
+              />
 
-      <button type="submit">Salvar Alterações</button>
-    </form>
+              {/* Galeria de Fotos */}
+              <div>
+                <label>Galeria de Fotos (produtos):</label>
+                <br />
+                <input
+                  type="file"
+                  accept="image/*"
+                  multiple
+                  onChange={handleGalleryChange}
+                />
+                <br /><br />
+              </div>
+
+              <button type="submit">Salvar Alterações</button>
+            </form>
+          )}
+        </div>
+      </main>
+
+      <footer className="edit-footer">
+        © 2025 GETICARD — Editando seu cartão
+      </footer>
+    </div>
   );
 };
 

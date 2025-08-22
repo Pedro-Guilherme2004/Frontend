@@ -1,9 +1,9 @@
-// CardCreate.jsx
-
+// src/pages/CardCreate.jsx
 import { useState, useEffect } from "react";
 import api from "../services/api";
 import { useNavigate } from "react-router-dom";
 import InputField from "../components/InputField";
+import "../styles/cardcreate.css"; // layout exclusivo desta página
 
 const CardCreate = () => {
   const [avatarFile, setAvatarFile] = useState(null);
@@ -36,25 +36,21 @@ const CardCreate = () => {
         setSite(obj.site || "");
         setPix(obj.chave_pix || "");
       } catch {}
-      // Só limpa os temporários depois de preencher, assim evita que volte em branco por engano
+      // Limpa os temporários depois de preencher
       localStorage.removeItem("card_temp_data");
     }
   }, []);
 
-  // Sempre que mudar algo, salva no localStorage (exceto arquivos)
+  // Auto-save simples no localStorage (exceto arquivos)
   useEffect(() => {
     const tempData = {
       nome, biografia, empresa, whatsapp, emailContato,
       instagram, linkedin, site, chave_pix: pix
     };
     localStorage.setItem("card_temp_data", JSON.stringify(tempData));
-    // OBS: você pode comentar a linha acima se quiser salvar só no clique do "Voltar"
-  }, [
-    nome, biografia, empresa, whatsapp, emailContato,
-    instagram, linkedin, site, pix
-  ]);
+  }, [nome, biografia, empresa, whatsapp, emailContato, instagram, linkedin, site, pix]);
 
-  // Protege contra múltiplos cartões para o mesmo usuário
+  // Protege contra múltiplos cartões
   useEffect(() => {
     const card_id = localStorage.getItem("card_id");
     if (card_id) {
@@ -77,7 +73,7 @@ const CardCreate = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // Usando FormData para arquivos + campos
+    // FormData para arquivos + campos
     const formData = new FormData();
     formData.append("nome", nome);
     formData.append("biografia", biografia);
@@ -92,7 +88,6 @@ const CardCreate = () => {
     if (avatarFile) {
       formData.append("foto_perfil", avatarFile);
     }
-
     for (let file of galleryFiles) {
       formData.append("galeria", file);
     }
@@ -106,8 +101,7 @@ const CardCreate = () => {
         if (resp.data.message && resp.data.message.includes("Já existe")) {
           alert("Você já possui um cartão. Redirecionando para seu cartão...");
         }
-        // Limpa temporários ao criar cartão com sucesso
-        localStorage.removeItem("card_temp_data");
+        localStorage.removeItem("card_temp_data"); // limpa temporários
         navigate(`/card/view/${resp.data.card_id}`);
       } else {
         alert("Erro: card_id não retornado pelo backend!");
@@ -119,130 +113,139 @@ const CardCreate = () => {
   };
 
   return (
-    <>
-      <div
-        style={{
-          background: "#f7eabb",
-          border: "1px solid #e5c252",
-          borderRadius: 7,
-          padding: "14px 18px",
-          marginBottom: 18,
-          color: "#444",
-          fontWeight: 500,
-          fontSize: 15,
-          boxShadow: "0 2px 6px #0001"
-        }}
-      >
-        <strong>Atenção:</strong> Só será possível <b>editar</b> ou <b>excluir</b> seu cartão se você estiver logado com o mesmo <b>e-mail</b> cadastrado abaixo.<br />
-        <span style={{ fontSize: 13, color: "#a66" }}>
-          Guarde bem este e-mail! Ele será usado para autenticação e proteção do seu cartão.
-        </span>
-      </div>
+    <div className="create-page">
+      <main className="create-main">
+        <div className="create-card">
+          <div
+            style={{
+              background: "#f7eabb",
+              border: "1px solid #e5c252",
+              borderRadius: 7,
+              padding: "14px 18px",
+              marginBottom: 18,
+              color: "#444",
+              fontWeight: 500,
+              fontSize: 15,
+              boxShadow: "0 2px 6px #0001"
+            }}
+          >
+            <strong>Atenção:</strong> Só será possível <b>editar</b> ou <b>excluir</b> seu cartão se
+            você estiver logado com o mesmo <b>e-mail</b> cadastrado abaixo.<br />
+            <span style={{ fontSize: 13, color: "#a66" }}>
+              Guarde bem este e-mail! Ele será usado para autenticação e proteção do seu cartão.
+            </span>
+          </div>
 
-      <form onSubmit={handleSubmit} style={{ maxWidth: 600, margin: "0 auto" }} encType="multipart/form-data">
-        <h2>Criar Cartão</h2>
+          <form onSubmit={handleSubmit} style={{ maxWidth: 600, margin: "0 auto" }} encType="multipart/form-data">
+            <h2>Criar Cartão</h2>
 
-        {/* Foto de Avatar */}
-        <label>Foto de Avatar:</label>
-        <br />
-        <input
-          type="file"
-          accept="image/*"
-          onChange={e => setAvatarFile(e.target.files[0])}
-        />
-        <br /><br />
+            {/* Foto de Avatar */}
+            <label>Foto de Avatar:</label>
+            <br />
+            <input
+              type="file"
+              accept="image/*"
+              onChange={e => setAvatarFile(e.target.files[0])}
+            />
+            <br /><br />
 
-        {/* Nome */}
-        <InputField
-          label="Nome"
-          type="text"
-          value={nome}
-          onChange={e => setNome(e.target.value)}
-        />
+            {/* Nome */}
+            <InputField
+              label="Nome"
+              type="text"
+              value={nome}
+              onChange={e => setNome(e.target.value)}
+            />
 
-        {/* Bio */}
-        <div>
-          <label>Biografia (breve descrição):</label>
-          <br />
-          <textarea
-            value={biografia}
-            onChange={e => setBiografia(e.target.value)}
-            rows={3}
-            style={{ width: "100%" }}
-          />
-          <br /><br />
+            {/* Bio */}
+            <div>
+              <label>Biografia (breve descrição):</label>
+              <br />
+              <textarea
+                value={biografia}
+                onChange={e => setBiografia(e.target.value)}
+                rows={3}
+                style={{ width: "100%" }}
+              />
+              <br /><br />
+            </div>
+
+            {/* Empresa */}
+            <InputField
+              label="Empresa"
+              type="text"
+              value={empresa}
+              onChange={e => setEmpresa(e.target.value)}
+            />
+
+            {/* WhatsApp */}
+            <InputField
+              label="WhatsApp"
+              type="text"
+              value={whatsapp}
+              onChange={e => setWhatsapp(e.target.value)}
+            />
+
+            {/* Email para contato */}
+            <InputField
+              label="Email para contato"
+              type="email"
+              value={emailContato}
+              onChange={e => setEmailContato(e.target.value)}
+            />
+
+            {/* Links */}
+            <InputField
+              label="Instagram"
+              type="url"
+              value={instagram}
+              onChange={e => setInstagram(e.target.value)}
+              required={false}
+            />
+            <InputField
+              label="LinkedIn"
+              type="url"
+              value={linkedin}
+              onChange={e => setLinkedin(e.target.value)}
+              required={false}
+            />
+            <InputField
+              label="Site Personalizado"
+              type="url"
+              value={site}
+              onChange={e => setSite(e.target.value)}
+              required={false}
+            />
+            <InputField
+              label="Chave Pix"
+              type="text"
+              value={pix}
+              onChange={e => setPix(e.target.value)}
+              required={false}
+            />
+
+            {/* Galeria de Fotos */}
+            <div>
+              <label>Galeria de Fotos (produtos):</label>
+              <br />
+              <input
+                type="file"
+                accept="image/*"
+                multiple
+                onChange={handleGalleryChange}
+              />
+              <br /><br />
+            </div>
+
+            <button type="submit">Salvar</button>
+          </form>
         </div>
+      </main>
 
-        {/* Empresa */}
-        <InputField
-          label="Empresa"
-          type="text"
-          value={empresa}
-          onChange={e => setEmpresa(e.target.value)}
-        />
-
-        {/* WhatsApp */}
-        <InputField
-          label="WhatsApp"
-          type="text"
-          value={whatsapp}
-          onChange={e => setWhatsapp(e.target.value)}
-        />
-
-        {/* Email para contato */}
-        <InputField
-          label="Email para contato"
-          type="email"
-          value={emailContato}
-          onChange={e => setEmailContato(e.target.value)}
-        />
-
-        {/* Links */}
-        <InputField
-          label="Instagram"
-          type="url"
-          value={instagram}
-          onChange={e => setInstagram(e.target.value)}
-          required={false}
-        />
-        <InputField
-          label="LinkedIn"
-          type="url"
-          value={linkedin}
-          onChange={e => setLinkedin(e.target.value)}
-          required={false}
-        />
-        <InputField
-          label="Site Personalizado"
-          type="url"
-          value={site}
-          onChange={e => setSite(e.target.value)}
-          required={false}
-        />
-        <InputField
-          label="Chave Pix"
-          type="text"
-          value={pix}
-          onChange={e => setPix(e.target.value)}
-          required={false}
-        />
-
-        {/* Galeria de Fotos */}
-        <div>
-          <label>Galeria de Fotos (produtos):</label>
-          <br />
-          <input
-            type="file"
-            accept="image/*"
-            multiple
-            onChange={handleGalleryChange}
-          />
-          <br /><br />
-        </div>
-
-        <button type="submit">Salvar</button>
-      </form>
-    </>
+      <footer className="create-footer">
+        © 2025 GETICARD — Crie seu cartão digital
+      </footer>
+    </div>
   );
 };
 

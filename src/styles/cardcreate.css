@@ -1,25 +1,26 @@
-/* Layout exclusivo do CardEdit (não interfere em view/login/create) */
-.edit-page {
+/* Layout exclusivo da página de criação (não interfere nas outras) */
+.create-page {
   min-height: 100vh;
   display: flex;
   flex-direction: column;
 }
 
-.edit-main {
+.create-main {
   flex: 1;
   display: flex;
   justify-content: center;
-  align-items: flex-start;
+  align-items: flex-start;    /* formulário mais “no topo” */
   padding: 2rem 1rem;
 }
 
-.edit-card {
+/* Container opcional para dar um leve destaque ao formulário */
+.create-card {
   width: 100%;
   max-width: 760px;
 }
 
-/* Rodapé apenas do CardEdit */
-.edit-footer {
+/* Rodapé só do CardCreate */
+.create-footer {
   width: 100%;
   text-align: center;
   padding: 14px 12px;
