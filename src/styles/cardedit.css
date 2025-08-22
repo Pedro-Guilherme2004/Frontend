@@ -1,73 +1,85 @@
-/* Garante que o cartão NUNCA estoure a largura e recorte cantos arredondados */
-.border-type1 {
-  max-width: 420px;         /* era 370px, pode ajustar aqui */
+/* ========= PAINEL PADRÃO (usar em view e edit) ========= */
+.surface {
   width: 100%;
+  max-width: 760px;                 /* mesma largura do Edit */
   margin: 24px auto;
-  overflow: hidden;         /* recorta qualquer coisa que escape das bordas */
+  padding: 24px;
+  background: #e9edf1;              /* painel claro */
+  border: 1px solid #d3d9e1;
+  border-radius: 12px;
+  box-shadow: 0 8px 24px rgba(0,0,0,.12);
+  color: #0b2239;                   /* texto escuro como no Edit */
 }
 
-/* Container da página do cartão */
-.card-view-container {
-  padding: 24px 16px;
-  display: flex;
-  justify-content: center;
-  align-items: flex-start;
-  width: 100%;
-  min-height: auto;         /* não força altura */
+/* título e nome dentro do painel */
+.surface h2,
+.surface .name {
+  margin: 0 0 12px;
+  color: #0b2239;
+  text-shadow: none;
+  font-weight: 700;
 }
 
-/* ÍCONES E IMAGENS – nunca deixarem estourar */
-.card-view-container img,
-.edit-page img,
-.create-page img {
-  max-width: 100%;
-  height: auto;
-  display: block;
+/* Avatar maior e com respiro */
+.surface .avatar {
+  width: 160px;
+  height: 160px;
+  margin: 6px auto 10px;
+  border-radius: 50%;
+  object-fit: cover;
+  background: #f2f2f2;
+  border: 3px solid #fff;
+  box-shadow: 0 2px 8px rgba(0,0,0,.08);
 }
 
-/* QR centralizado e com espaçamento */
+/* bloco de informação no estilo input do Edit */
+.surface .info-block {
+  background: #f6f8fb;
+  border: 1px solid #d7dee6;
+  border-radius: 8px;
+  padding: 10px 12px;
+  margin-top: 10px;
+  font-size: 0.98rem;
+  font-weight: 600;
+  text-align: left;
+  color: #0b2239;
+  box-shadow: none;
+}
+
+/* QR centralizado e com respiro */
 .qr-wrapper {
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 8px;
+  margin-top: 14px;
 }
 
-/* BOTÕES DE REDES SOCIAIS – tamanho consistente */
-.button-group {
-  display: flex;
+/* botão grupo compacto e centralizado */
+.surface .button-group {
   justify-content: center;
   flex-wrap: wrap;
   gap: 12px;
-  margin-top: 8px;
+  margin-top: 12px;
 }
 
-.button-group a { display: inline-flex; }
-
-.button-group button {
+.surface .button-group button {
   width: 72px;
   height: 72px;
   border-radius: 14px;
-  border: 1px solid rgba(255,255,255,.15);
-  background: rgba(255,255,255,.08);
-  padding: 0;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
+  border: 1px solid rgba(0,0,0,.08);
+  background: rgba(255,255,255,.7);
   transition: transform .15s ease;
 }
 
-.button-group button:hover { transform: translateY(-2px); }
+.surface .button-group button:hover { transform: translateY(-2px); }
+.surface .button-group button img.icon { width: 36px; height: 36px; }
 
-.button-group button img.icon {
-  width: 36px;
-  height: 36px;
-  object-fit: contain;
-}
-
-/* Inputs dentro do cartão (link) ocuparem a largura do cartão */
-.border-type1 input[type="text"][readonly] {
+/* inputs de link ocupam a largura do painel */
+.surface input[type="text"][readonly] {
   width: 100%;
   box-sizing: border-box;
 }
+
+/* garante que nenhuma imagem estoure o painel */
+.surface img { max-width: 100%; height: auto; display: block; }

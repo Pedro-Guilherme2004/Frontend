@@ -1,11 +1,13 @@
-//CardView.jsx
-
+// src/pages/CardView.jsx
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import QRCode from "react-qr-code";
 import api from "../services/api";
 import { jwtDecode } from "jwt-decode";
-import "../styles/cardview.css";
+
+// IMPORTANTE: estilos
+import "../styles/cardedit.css";   // estilos compartilhados do cartão (avatar, info-block, etc.)
+import "../styles/cardview.css";   // (se você estiver usando layout/rodapé específicos da view)
 
 const backendUrl = "https://geticard.onrender.com";
 
@@ -56,7 +58,7 @@ const CardView = () => {
           setIsOwner(false);
           setEmailMismatch(true);
         }
-      } catch (e) {
+      } catch {
         setIsOwner(false);
         setEmailMismatch(false);
       }
@@ -66,7 +68,6 @@ const CardView = () => {
     }
   }, [dados]);
 
-  // Função para salvar dados do cartão e retornar ao create sem perder os campos
   const handleBackToEdit = () => {
     localStorage.setItem(
       "card_temp_data",
@@ -80,7 +81,6 @@ const CardView = () => {
         linkedin: dados.linkedin || "",
         site: dados.site || "",
         chave_pix: dados.chave_pix || "",
-        // galeria/foto_perfil não são restauráveis como files!
       })
     );
     navigate("/card/create");
@@ -105,15 +105,13 @@ const CardView = () => {
   }
 
   async function handleDelete() {
-    if (
-      window.confirm("Tem certeza que deseja excluir este cartão? Esta ação não pode ser desfeita!")
-    ) {
+    if (window.confirm("Tem certeza que deseja excluir este cartão? Esta ação não pode ser desfeita!")) {
       try {
         await api.delete(`/card/${dados.card_id}`);
         localStorage.removeItem("card_id");
         alert("Cartão excluído com sucesso!");
         navigate("/");
-      } catch (err) {
+      } catch {
         alert("Erro ao excluir o cartão.");
       }
     }
@@ -121,32 +119,32 @@ const CardView = () => {
 
   const renderGalleryImg = (img) => {
     if (!img) return "";
-    if (img.startsWith("/uploads/")) {
-      return `${backendUrl}${img}`;
-    }
-    if (img.startsWith("data:image")) {
-      return img;
-    }
+    if (img.startsWith("/uploads/")) return `${backendUrl}${img}`;
     return img;
   };
 
   return (
     <div className="card-view-container">
-      <div className="border-type1">
-
+      {/* use .surface para igualar o visual ao Edit */}
+      <div className="surface">
         {/* AVISO de e-mail diferente do cadastro */}
         {emailMismatch && (
-          <div style={{
-            background: "#ffe6e6",
-            border: "1px solid #d66767",
-            borderRadius: 8,
-            padding: "16px 18px",
-            color: "#822",
-            marginBottom: 18,
-            textAlign: "center"
-          }}>
-            <b>O e-mail do cartão não é o mesmo do seu login!</b><br />
-            Só é possível editar ou excluir o cartão se o e-mail cadastrado no cartão for igual ao do seu login.<br /><br />
+          <div
+            style={{
+              background: "#ffe6e6",
+              border: "1px solid #d66767",
+              borderRadius: 8,
+              padding: "16px 18px",
+              color: "#822",
+              marginBottom: 18,
+              textAlign: "center",
+            }}
+          >
+            <b>O e-mail do cartão não é o mesmo do seu login!</b>
+            <br />
+            Só é possível editar ou excluir o cartão se o e-mail cadastrado no cartão for igual ao do seu login.
+            <br />
+            <br />
             <button
               style={{
                 background: "#c62828",
@@ -156,7 +154,7 @@ const CardView = () => {
                 padding: "8px 18px",
                 fontWeight: 600,
                 marginTop: 10,
-                cursor: "pointer"
+                cursor: "pointer",
               }}
               onClick={handleBackToEdit}
             >
@@ -177,35 +175,40 @@ const CardView = () => {
         {/* BLOCO DE INFORMAÇÕES */}
         {dados.emailContato && (
           <div className="info-block">
-            <strong>Email: </strong>{dados.emailContato}
+            <strong>Email: </strong>
+            {dados.emailContato}
           </div>
         )}
         {dados.empresa && (
           <div className="info-block">
-            <strong>Empresa: </strong>{dados.empresa}
+            <strong>Empresa: </strong>
+            {dados.empresa}
           </div>
         )}
         {dados.biografia && (
           <div className="info-block">
-            <strong>Bio: </strong>{dados.biografia}
+            <strong>Bio: </strong>
+            {dados.biografia}
           </div>
         )}
         {dados.chave_pix && (
           <div className="info-block">
-            <strong>Pix: </strong>{dados.chave_pix}
+            <strong>Pix: </strong>
+            {dados.chave_pix}
           </div>
         )}
         {dados.whatsapp && (
           <div className="info-block">
-            <strong>WhatsApp: </strong>{dados.whatsapp}
+            <strong>WhatsApp: </strong>
+            {dados.whatsapp}
           </div>
         )}
 
-        {/* Botões só aparecem para o dono do cartão */}
+        {/* Botões só para o dono */}
         {isOwner && (
           <>
             <button
-              style={{ marginBottom: 10, marginTop: 10 }}
+              style={{ marginBottom: 10, marginTop: 12 }}
               onClick={() => navigate(`/card/edit/${dados.card_id}`)}
             >
               Editar Cartão
@@ -227,27 +230,29 @@ const CardView = () => {
           </>
         )}
 
-        {/* BLOCO DE LINK PARA NFC/QR CODE */}
-        <div style={{ margin: "20px 0", textAlign: "center" }}>
+        {/* LINK + QR */}
+        <div style={{ margin: "16px 0", textAlign: "center" }}>
           <strong>Link do Cartão:</strong>
           <input
             type="text"
             value={cardUrl}
             readOnly
-            style={{ width: "90%", margin: "8px 0" }}
-            onClick={e => e.target.select()}
+            onClick={(e) => e.target.select()}
+            style={{ marginTop: 8 }}
           />
           <button
             onClick={() => {
               navigator.clipboard.writeText(cardUrl);
-              alert("Link copiado para área de transferência!");
+              alert("Link copiado!");
             }}
+            style={{ marginTop: 8 }}
           >
             Copiar Link
           </button>
-          <div style={{ marginTop: 18 }}>
+
+          <div className="qr-wrapper">
             <QRCode value={cardUrl} size={130} />
-            <div style={{ fontSize: 13, marginTop: 8 }}>
+            <div style={{ fontSize: 13 }}>
               Escaneie o QR code para acessar este cartão!
             </div>
           </div>
@@ -259,14 +264,22 @@ const CardView = () => {
             <p className="section-title white">Redes Sociais:</p>
             <div className="button-group">
               {dados.instagram && (
-                <a href={dados.instagram} target="_blank" rel="noopener noreferrer">
+                <a
+                  href={dados.instagram}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
                   <button type="button">
                     <img src="/insta.png" alt="Instagram" className="icon" />
                   </button>
                 </a>
               )}
               {dados.linkedin && (
-                <a href={dados.linkedin} target="_blank" rel="noopener noreferrer">
+                <a
+                  href={dados.linkedin}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
                   <button type="button">
                     <img src="/linkedin.png" alt="LinkedIn" className="icon" />
                   </button>
