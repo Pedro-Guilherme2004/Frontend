@@ -1,6 +1,6 @@
-/* Layout exclusivo do CardEdit (não interfere em view/login/create) */
+/* ===== Layout exclusivo do CardEdit ===== */
 .edit-page {
-  min-height: 100vh;
+  min-height: auto;
   display: flex;
   flex-direction: column;
 }
