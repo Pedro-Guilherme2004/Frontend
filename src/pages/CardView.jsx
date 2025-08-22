@@ -1,13 +1,9 @@
-// src/pages/CardView.jsx
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import QRCode from "react-qr-code";
 import api from "../services/api";
 import { jwtDecode } from "jwt-decode";
-
-// IMPORTANTE: estilos
-import "../styles/cardedit.css";   // estilos compartilhados do cartão (avatar, info-block, etc.)
-import "../styles/cardview.css";   // (se você estiver usando layout/rodapé específicos da view)
+import "../styles/cardedit.css"; // estilos do cartão (border-type1, avatar, info-block...)
 
 const backendUrl = "https://geticard.onrender.com";
 
@@ -32,7 +28,7 @@ const CardView = () => {
           setError("Cartão não encontrado.");
         }
       } catch (err) {
-        if (err.response && err.response.status === 404) {
+        if (err.response?.status === 404) {
           localStorage.removeItem("card_id");
           setError("Cartão não encontrado.");
         } else {
@@ -48,7 +44,7 @@ const CardView = () => {
 
   useEffect(() => {
     const token = localStorage.getItem("access_token");
-    if (token && dados && dados.emailContato) {
+    if (token && dados?.emailContato) {
       try {
         const decoded = jwtDecode(token);
         if (decoded.sub === dados.emailContato) {
@@ -69,20 +65,17 @@ const CardView = () => {
   }, [dados]);
 
   const handleBackToEdit = () => {
-    localStorage.setItem(
-      "card_temp_data",
-      JSON.stringify({
-        nome: dados.nome || "",
-        biografia: dados.biografia || "",
-        empresa: dados.empresa || "",
-        whatsapp: dados.whatsapp || "",
-        emailContato: dados.emailContato || "",
-        instagram: dados.instagram || "",
-        linkedin: dados.linkedin || "",
-        site: dados.site || "",
-        chave_pix: dados.chave_pix || "",
-      })
-    );
+    localStorage.setItem("card_temp_data", JSON.stringify({
+      nome: dados?.nome || "",
+      biografia: dados?.biografia || "",
+      empresa: dados?.empresa || "",
+      whatsapp: dados?.whatsapp || "",
+      emailContato: dados?.emailContato || "",
+      instagram: dados?.instagram || "",
+      linkedin: dados?.linkedin || "",
+      site: dados?.site || "",
+      chave_pix: dados?.chave_pix || "",
+    }));
     navigate("/card/create");
   };
 
@@ -96,10 +89,7 @@ const CardView = () => {
   if (dados.foto_perfil) {
     if (dados.foto_perfil.startsWith("/uploads/")) {
       fotoPerfilSrc = `${backendUrl}${dados.foto_perfil}`;
-    } else if (
-      dados.foto_perfil.startsWith("data:image") ||
-      dados.foto_perfil.startsWith("http")
-    ) {
+    } else if (dados.foto_perfil.startsWith("data:image") || dados.foto_perfil.startsWith("http")) {
       fotoPerfilSrc = dados.foto_perfil;
     }
   }
@@ -125,9 +115,7 @@ const CardView = () => {
 
   return (
     <div className="card-view-container">
-      {/* use .surface para igualar o visual ao Edit */}
-      <div className="surface">
-        {/* AVISO de e-mail diferente do cadastro */}
+      <div className="border-type1">
         {emailMismatch && (
           <div
             style={{
@@ -140,11 +128,8 @@ const CardView = () => {
               textAlign: "center",
             }}
           >
-            <b>O e-mail do cartão não é o mesmo do seu login!</b>
-            <br />
-            Só é possível editar ou excluir o cartão se o e-mail cadastrado no cartão for igual ao do seu login.
-            <br />
-            <br />
+            <b>O e-mail do cartão não é o mesmo do seu login!</b><br />
+            Só é possível editar ou excluir o cartão se o e-mail cadastrado no cartão for igual ao do seu login.<br /><br />
             <button
               style={{
                 background: "#c62828",
@@ -166,51 +151,23 @@ const CardView = () => {
           </div>
         )}
 
-        {/* TOPO: AVATAR + NOME */}
+        {/* Topo */}
         <div className="avatar-nome-block">
           <img src={fotoPerfilSrc} alt="Avatar" className="avatar" />
           <h2 className="name">{dados.nome || "Sem Nome"}</h2>
         </div>
 
-        {/* BLOCO DE INFORMAÇÕES */}
-        {dados.emailContato && (
-          <div className="info-block">
-            <strong>Email: </strong>
-            {dados.emailContato}
-          </div>
-        )}
-        {dados.empresa && (
-          <div className="info-block">
-            <strong>Empresa: </strong>
-            {dados.empresa}
-          </div>
-        )}
-        {dados.biografia && (
-          <div className="info-block">
-            <strong>Bio: </strong>
-            {dados.biografia}
-          </div>
-        )}
-        {dados.chave_pix && (
-          <div className="info-block">
-            <strong>Pix: </strong>
-            {dados.chave_pix}
-          </div>
-        )}
-        {dados.whatsapp && (
-          <div className="info-block">
-            <strong>WhatsApp: </strong>
-            {dados.whatsapp}
-          </div>
-        )}
+        {/* Infos */}
+        {dados.emailContato && <div className="info-block"><strong>Email: </strong>{dados.emailContato}</div>}
+        {dados.empresa &&     <div className="info-block"><strong>Empresa: </strong>{dados.empresa}</div>}
+        {dados.biografia &&   <div className="info-block"><strong>Bio: </strong>{dados.biografia}</div>}
+        {dados.chave_pix &&   <div className="info-block"><strong>Pix: </strong>{dados.chave_pix}</div>}
+        {dados.whatsapp &&    <div className="info-block"><strong>WhatsApp: </strong>{dados.whatsapp}</div>}
 
-        {/* Botões só para o dono */}
+        {/* Ações do dono */}
         {isOwner && (
           <>
-            <button
-              style={{ marginBottom: 10, marginTop: 12 }}
-              onClick={() => navigate(`/card/edit/${dados.card_id}`)}
-            >
+            <button style={{ marginBottom: 10, marginTop: 10 }} onClick={() => navigate(`/card/edit/${dados.card_id}`)}>
               Editar Cartão
             </button>
             <button
@@ -230,84 +187,59 @@ const CardView = () => {
           </>
         )}
 
-        {/* LINK + QR */}
-        <div style={{ margin: "16px 0", textAlign: "center" }}>
+        {/* Link + QR */}
+        <div style={{ margin: "20px 0", textAlign: "center" }}>
           <strong>Link do Cartão:</strong>
           <input
             type="text"
             value={cardUrl}
             readOnly
+            style={{ width: "90%", margin: "8px 0" }}
             onClick={(e) => e.target.select()}
-            style={{ marginTop: 8 }}
           />
           <button
-            onClick={() => {
-              navigator.clipboard.writeText(cardUrl);
-              alert("Link copiado!");
-            }}
-            style={{ marginTop: 8 }}
+            onClick={() => { navigator.clipboard.writeText(cardUrl); alert("Link copiado para área de transferência!"); }}
           >
             Copiar Link
           </button>
 
-          <div className="qr-wrapper">
+          <div style={{ marginTop: 18, display: "flex", flexDirection: "column", alignItems: "center", gap: 8 }}>
             <QRCode value={cardUrl} size={130} />
-            <div style={{ fontSize: 13 }}>
-              Escaneie o QR code para acessar este cartão!
-            </div>
+            <div style={{ fontSize: 13 }}>Escaneie o QR code para acessar este cartão!</div>
           </div>
         </div>
 
-        {/* REDES SOCIAIS */}
+        {/* Redes sociais */}
         {(dados.instagram || dados.linkedin || dados.site) && (
           <>
             <p className="section-title white">Redes Sociais:</p>
             <div className="button-group">
               {dados.instagram && (
-                <a
-                  href={dados.instagram}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  <button type="button">
-                    <img src="/insta.png" alt="Instagram" className="icon" />
-                  </button>
+                <a href={dados.instagram} target="_blank" rel="noopener noreferrer">
+                  <button type="button"><img src="/insta.png" alt="Instagram" className="icon" /></button>
                 </a>
               )}
               {dados.linkedin && (
-                <a
-                  href={dados.linkedin}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  <button type="button">
-                    <img src="/linkedin.png" alt="LinkedIn" className="icon" />
-                  </button>
+                <a href={dados.linkedin} target="_blank" rel="noopener noreferrer">
+                  <button type="button"><img src="/linkedin.png" alt="LinkedIn" className="icon" /></button>
                 </a>
               )}
               {dados.site && (
                 <a href={dados.site} target="_blank" rel="noopener noreferrer">
-                  <button type="button">
-                    <img src="/website.png" alt="Site" className="icon" />
-                  </button>
+                  <button type="button"><img src="/website.png" alt="Site" className="icon" /></button>
                 </a>
               )}
             </div>
           </>
         )}
 
-        {/* GALERIA */}
+        {/* Galeria */}
         {Array.isArray(dados.galeria) && dados.galeria.length > 0 && (
           <>
             <p className="section-title white">Galeria:</p>
             <div className="gallery">
               {dados.galeria.map((img, idx) => (
-                <img
-                  key={idx}
-                  src={renderGalleryImg(img)}
-                  alt={`produto-${idx}`}
-                  className="gallery-img"
-                />
+                <img key={idx} src={renderGalleryImg(img)} alt={`produto-${idx}`} className="gallery-img" />
               ))}
             </div>
           </>
