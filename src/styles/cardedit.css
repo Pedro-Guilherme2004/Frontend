@@ -1,10 +1,23 @@
 html, body {
   height: 100%;
-  min-height: 200vh;   /* Altura total da página, permite rolagem caso necessário */
   margin: 0;
   padding: 0;
   box-sizing: border-box;
   overflow-x: hidden;
+  display: flex;
+  flex-direction: column;   /* empilha conteúdo + footer */
+  background: linear-gradient(to bottom, #001b35 0%, #1c3e5e 50%, #171e24 100%);
+  font-family: sans-serif;
+  color: #fff;
+}
+
+/* Área principal ocupa todo o espaço restante */
+.main-login {
+  flex: 1; /* cresce e empurra o footer para o fim */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
 }
 
 body {
@@ -31,7 +44,7 @@ body {
   /* background já está no body, não precisa repetir aqui */
 }
 
-/* Cartão fixo */
+/* Cartão de login */
 .border-type1 {
   background-image:
     linear-gradient(rgba(0, 90, 86, 0.68), rgba(0, 36, 34, 0.93)),
@@ -44,12 +57,7 @@ body {
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
-  box-sizing: border-box;
-  position: relative;
   box-shadow: 0 8px 24px 0 #001b3540;
-  /* Para rolar só dentro do cartão se quiser (opcional): */
-  /* max-height: 92vh;
-  overflow-y: auto; */
 }
 
 /* Bloco topo: Avatar + Nome */
