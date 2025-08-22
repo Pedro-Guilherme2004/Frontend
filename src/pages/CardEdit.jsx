@@ -88,7 +88,7 @@ const CardEdit = () => {
   return (
     <div className="edit-page">
       <main className="edit-main">
-        <div className="edit-card">
+        <div className="edit-surface">
           {loading ? (
             <p>Carregando...</p>
           ) : erro ? (

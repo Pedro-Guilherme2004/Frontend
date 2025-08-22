@@ -1,54 +1,96 @@
-/* Layout exclusivo da página do cartão (CardView) */
-.card-page {
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
+/* ===== Página do cartão ===== */
+.card-page{
+  min-height:100vh; display:flex; flex-direction:column;
+}
+.card-main{
+  flex:1; display:flex; justify-content:center; align-items:flex-start;
+  padding:2rem 1rem;
 }
 
-.card-main {
-  flex: 1;
-  display: flex;
-  justify-content: center;
-  align-items: flex-start;
-  padding: 2rem 1rem;
+/* ===== Cartão verde (visual antigo) ===== */
+.border-type1{
+  background-image:
+    linear-gradient(rgba(0,90,86,.68), rgba(0,36,34,.93)),
+    linear-gradient(135deg,#a0f1e6,#b3dbf6,#d0e8f8);
+  border:2px solid transparent;
+  border-radius:32px;
+  padding:1.5rem 1.2rem 2rem 1.2rem;
+  max-width:370px; width:100%;
+  display:flex; flex-direction:column; gap:.5rem;
+  box-shadow:0 8px 24px 0 #001b3540;
+  overflow:hidden;
 }
 
-/* Rodapé do CardView */
-.card-footer {
-  width: 100%;
-  text-align: center;
-  padding: 14px 12px;
-  color: #fff;
-  background: linear-gradient(90deg, rgba(0,0,0,0.28), rgba(0,0,0,0.18));
-  border-top: 1px solid rgba(255,255,255,0.08);
-  font-size: 0.95rem;
+/* Topo: avatar + nome */
+.avatar-nome-block{
+  display:flex; flex-direction:column; align-items:center;
+  margin-bottom:16px; border-bottom:1.5px solid #aeeeee40; padding-bottom:12px;
+}
+.avatar{
+  width:104px; height:104px; border-radius:50%; object-fit:cover;
+  margin:10px auto 6px; background:#e9f7f7; border:3px solid #e9f7f7;
+  box-shadow:0 0 12px #0002;
+}
+.name{
+  margin:0 0 .5rem; text-align:center; font-size:1.6rem; color:#fff;
+  text-shadow:0 0 6px #001b3550; font-weight:700; letter-spacing:1px;
 }
 
-.card-footer .brand {
-  font-weight: 700;
-  letter-spacing: 0.4px;
+/* Pílulas informativas */
+.info-block{
+  background:#a3bcc5b6;
+  border:2px solid #d2e8e9;
+  border-radius:18px;
+  padding:11px 12px;
+  margin-top:7px;
+  font-size:1rem; font-weight:700; text-align:center; color:#001b35;
+  box-shadow:0 2px 8px 0 #0001; width:100%; word-break:break-word;
+}
+.info-block:not(:first-child){ margin-top:8px; }
+
+/* Galeria */
+.gallery{
+  display:grid; grid-template-columns:repeat(auto-fill,minmax(110px,1fr));
+  gap:10px; margin-top:8px;
+}
+.gallery-img{
+  width:100%; height:110px; object-fit:cover;
+  border-radius:10px; box-shadow:0 1px 4px rgba(0,0,0,.15);
 }
 
-.card-footer .links {
-  display: inline-flex;
-  gap: 12px;
-  margin-left: 8px;
+/* Botões sociais */
+.button-group{ display:flex; justify-content:space-between; gap:.5rem; margin-top:.3rem; }
+.button-group button{
+  width:96px; height:96px; border:none; border-radius:16px; background:transparent;
+  cursor:pointer; padding:0; display:flex; align-items:center; justify-content:center;
+  transition:transform .2s;
+}
+.button-group button:hover{ transform:scale(1.05); }
+.button-group button img.icon{ width:64px; height:64px; object-fit:contain; }
+
+/* Input de link */
+.border-type1 input[type="text"][readonly]{
+  background:#fffefa; border:1px solid #dbdbdb; border-radius:6px;
+  font-size:.98rem; padding:6px 7px; margin:8px auto; width:90%; text-align:center;
 }
 
-.card-footer .links a,
-.card-footer .links button {
-  background: none;
-  border: none;
-  color: #bfefff;
-  text-decoration: none;
-  cursor: pointer;
-  padding: 0;
-  font: inherit;
-  opacity: 0.95;
+/* ===== Rodapé do CardView ===== */
+.card-footer{
+  width:100%; text-align:center; padding:14px 12px; color:#fff;
+  background:linear-gradient(90deg,rgba(0,0,0,.28),rgba(0,0,0,.18));
+  border-top:1px solid rgba(255,255,255,.08); font-size:.95rem;
 }
+.card-footer .brand{ font-weight:700; letter-spacing:.4px; }
+.card-footer .links{ display:inline-flex; gap:12px; margin-left:8px; }
+.card-footer .links a,.card-footer .links button{
+  background:none; border:none; color:#bfefff; text-decoration:none; cursor:pointer; padding:0; font:inherit; opacity:.95;
+}
+.card-footer .links a:hover,.card-footer .links button:hover{ text-decoration:underline; opacity:1; }
 
-.card-footer .links a:hover,
-.card-footer .links button:hover {
-  text-decoration: underline;
-  opacity: 1;
+/* Mobile */
+@media (max-width:450px){
+  .border-type1{ max-width:100%; padding:.9rem; }
+  .button-group{ flex-direction:column; align-items:center; }
+  .button-group button{ width:80px; height:80px; }
+  .button-group button img.icon{ width:48px; height:48px; }
 }
