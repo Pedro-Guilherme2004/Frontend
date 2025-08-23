@@ -45,14 +45,38 @@
   text-shadow:0 0 6px #001b3550; font-weight:700; letter-spacing:1px;
 }
 
-/* Pílulas informativas */
+/* ========= Pílulas informativas (agora proporcionais) ========= */
 .info-block{
-  background:#a3bcc5b6; border:2px solid #d2e8e9; border-radius:18px;
-  padding:11px 12px; margin-top:7px;
-  font-size:1rem; font-weight:700; text-align:center; color:#001b35;
-  box-shadow:0 2px 8px 0 #0001; width:100%; word-break:break-word;
+  display:flex;                 /* rótulo + valor lado a lado */
+  align-items:center;
+  gap:10px;
+  background:#a3bcc5b6;
+  border:2px solid #d2e8e9;
+  border-radius:18px;
+  padding:11px 12px;
+  margin-top:8px;
+  font-size:1rem;
+  font-weight:700;
+  color:#001b35;
+  box-shadow:0 2px 8px 0 #0001;
+  width:100%;
+  text-align:left;              /* nada centralizado aqui */
+  box-sizing:border-box;
+  min-height:48px;              /* altura consistente */
 }
-.info-block:not(:first-child){ margin-top:8px; }
+.info-block strong{
+  flex:0 0 128px;               /* largura fixa do rótulo */
+  text-align:right;
+  white-space:nowrap;
+  margin-right:2px;
+}
+.info-block span{
+  flex:1 1 auto;                /* valor ocupa o resto */
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+}
+/* (funciona mesmo sem <span>, mas sem ellipsis; se puder, envolva o valor em <span>) */
 
 /* Galeria */
 .gallery{
@@ -65,7 +89,7 @@
 }
 
 /* Botões sociais */
-.button-group{ display:flex; justify-content:space-between; gap:.5rem; margin-top:.3rem; }
+.button-group{ display:flex; justify-content:center; gap:.5rem; margin-top:.3rem; flex-wrap:wrap; }
 .button-group button{
   width:96px; height:96px; border:none; border-radius:16px; background:transparent;
   cursor:pointer; padding:0; display:flex; align-items:center; justify-content:center;
@@ -82,7 +106,7 @@
 
 /* ===== Rodapé do CardView (sticky) ===== */
 .card-footer{
-  margin-top:auto; /* gruda no fim da página */
+  margin-top:auto;
   width:100%; text-align:center; padding:14px 12px; color:#fff;
   background:linear-gradient(90deg,rgba(0,0,0,.28),rgba(0,0,0,.18));
   border-top:1px solid rgba(255,255,255,.08); font-size:.95rem;
@@ -100,4 +124,9 @@
   .button-group{ flex-direction:column; align-items:center; }
   .button-group button{ width:80px; height:80px; }
   .button-group button img.icon{ width:48px; height:48px; }
+
+  /* no mobile, empilha rótulo acima do valor */
+  .info-block{ flex-direction:column; align-items:stretch; gap:4px; min-height:auto; }
+  .info-block strong{ flex:none; width:auto; text-align:left; margin:0; }
+  .info-block span{ white-space:normal; }
 }
