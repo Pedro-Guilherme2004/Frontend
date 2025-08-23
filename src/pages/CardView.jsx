@@ -7,6 +7,16 @@ import "../styles/cardview.css"; // CSS do CardView (verde escuro)
 
 const backendUrl = "https://geticard.onrender.com";
 
+// Normaliza qualquer formato vindo do backend:
+// "uploads/x.jpg", "/uploads/x.jpg", "uploads\\x.jpg", http(s), base64
+const normalizeImgUrl = (raw) => {
+  if (!raw) return "";
+  let s = String(raw).trim().replace(/\\/g, "/"); // \ -> /
+  if (/^https?:\/\//i.test(s) || s.startsWith("data:image")) return s;
+  if (s.startsWith("/")) return `${backendUrl}${s}`;
+  return `${backendUrl}/${s.replace(/^\.?\//, "")}`;
+};
+
 const CardView = () => {
   const { id } = useParams();
   const navigate = useNavigate();
@@ -16,7 +26,7 @@ const CardView = () => {
   const [isOwner, setIsOwner] = useState(false);
   const [emailMismatch, setEmailMismatch] = useState(false);
 
-  // >>> Isola o CardView do CSS global do login
+  // Isola o CardView do CSS global do login
   useEffect(() => {
     document.body.classList.add("body-cardview");
     return () => document.body.classList.remove("body-cardview");
@@ -88,14 +98,8 @@ const CardView = () => {
 
   const cardUrl = `${window.location.origin}/card/view/${dados.card_id}`;
 
-  let fotoPerfilSrc = "/user-default.png";
-  if (dados.foto_perfil) {
-    if (dados.foto_perfil.startsWith("/uploads/")) {
-      fotoPerfilSrc = `${backendUrl}${dados.foto_perfil}`;
-    } else if (dados.foto_perfil.startsWith("data:image") || dados.foto_perfil.startsWith("http")) {
-      fotoPerfilSrc = dados.foto_perfil;
-    }
-  }
+  const fotoPerfilSrc = normalizeImgUrl(dados.foto_perfil) || "/user-default.png";
+  const renderGalleryImg = (img) => normalizeImgUrl(img);
 
   const handleDelete = async () => {
     if (!window.confirm("Tem certeza que deseja excluir este cartão? Esta ação não pode ser desfeita!")) return;
@@ -108,8 +112,6 @@ const CardView = () => {
       alert("Erro ao excluir o cartão.");
     }
   };
-
-  const renderGalleryImg = (img) => (!img ? "" : img.startsWith("/uploads/") ? `${backendUrl}${img}` : img);
 
   return (
     <div className="card-page">
@@ -156,11 +158,32 @@ const CardView = () => {
             <h2 className="name">{dados.nome || "Sem Nome"}</h2>
           </div>
 
-          {dados.emailContato && <div className="info-block"><strong>Email: </strong>{dados.emailContato}</div>}
-          {dados.empresa && <div className="info-block"><strong>Empresa: </strong>{dados.empresa}</div>}
-          {dados.biografia && <div className="info-block"><strong>Bio: </strong>{dados.biografia}</div>}
-          {dados.chave_pix && <div className="info-block"><strong>Pix: </strong>{dados.chave_pix}</div>}
-          {dados.whatsapp && <div className="info-block"><strong>WhatsApp: </strong>{dados.whatsapp}</div>}
+          {/* pílulas proporcionais (rótulo + valor em <span>) */}
+          {dados.emailContato && (
+            <div className="info-block">
+              <strong>Email:</strong><span>{dados.emailContato}</span>
+            </div>
+          )}
+          {dados.empresa && (
+            <div className="info-block">
+              <strong>Empresa:</strong><span>{dados.empresa}</span>
+            </div>
+          )}
+          {dados.biografia && (
+            <div className="info-block">
+              <strong>Bio:</strong><span>{dados.biografia}</span>
+            </div>
+          )}
+          {dados.chave_pix && (
+            <div className="info-block">
+              <strong>Pix:</strong><span>{dados.chave_pix}</span>
+            </div>
+          )}
+          {dados.whatsapp && (
+            <div className="info-block">
+              <strong>WhatsApp:</strong><span>{dados.whatsapp}</span>
+            </div>
+          )}
 
           {isOwner && (
             <>
@@ -217,7 +240,13 @@ const CardView = () => {
               <p className="section-title white" style={{ textAlign: "center", color: "#fff", fontWeight: 700 }}>Galeria:</p>
               <div className="gallery">
                 {dados.galeria.map((img, idx) => (
-                  <img key={idx} src={renderGalleryImg(img)} alt={`produto-${idx}`} className="gallery-img" />
+                  <img
+                    key={idx}
+                    src={renderGalleryImg(img)}
+                    alt={`produto-${idx}`}
+                    className="gallery-img"
+                    loading="lazy"
+                  />
                 ))}
               </div>
             </>
