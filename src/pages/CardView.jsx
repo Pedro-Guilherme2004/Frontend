@@ -1,14 +1,14 @@
+// src/pages/CardView.jsx
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import QRCode from "react-qr-code";
 import api from "../services/api";
 import { jwtDecode } from "jwt-decode";
-import "../styles/cardview.css"; // CSS do CardView (verde escuro)
+import "../styles/cardview.css";
 
 const backendUrl = "https://geticard.onrender.com";
 
-// Normaliza qualquer formato vindo do backend:
-// "uploads/x.jpg", "/uploads/x.jpg", "uploads\\x.jpg", http(s), base64
+// Normaliza qualquer formato vindo do backend
 const normalizeImgUrl = (raw) => {
   if (!raw) return "";
   let s = String(raw).trim().replace(/\\/g, "/"); // \ -> /
@@ -26,12 +26,13 @@ const CardView = () => {
   const [isOwner, setIsOwner] = useState(false);
   const [emailMismatch, setEmailMismatch] = useState(false);
 
-  // Isola o CardView do CSS global do login
+  // isola do CSS do login
   useEffect(() => {
     document.body.classList.add("body-cardview");
     return () => document.body.classList.remove("body-cardview");
   }, []);
 
+  // busca do cartão
   useEffect(() => {
     (async () => {
       try {
@@ -57,13 +58,15 @@ const CardView = () => {
     })();
   }, [id]);
 
+  // checa “dono” pelo token
   useEffect(() => {
     const token = localStorage.getItem("access_token");
     if (token && dados?.emailContato) {
       try {
         const decoded = jwtDecode(token);
-        setIsOwner(decoded.sub === dados.emailContato);
-        setEmailMismatch(decoded.sub !== dados.emailContato);
+        const owner = decoded.sub === dados.emailContato;
+        setIsOwner(owner);
+        setEmailMismatch(!owner);
       } catch {
         setIsOwner(false);
         setEmailMismatch(false);
@@ -97,8 +100,7 @@ const CardView = () => {
   if (!dados) return null;
 
   const cardUrl = `${window.location.origin}/card/view/${dados.card_id}`;
-
-  const fotoPerfilSrc = normalizeImgUrl(dados.foto_perfil) || "/user-default.png";
+  const fotoPerfilSrc = normalizeImgUrl(dados?.foto_perfil) || "/user-default.png";
   const renderGalleryImg = (img) => normalizeImgUrl(img);
 
   const handleDelete = async () => {
@@ -153,45 +155,63 @@ const CardView = () => {
             </div>
           )}
 
+          {/* topo */}
           <div className="avatar-nome-block">
             <img src={fotoPerfilSrc} alt="Avatar" className="avatar" />
             <h2 className="name">{dados.nome || "Sem Nome"}</h2>
           </div>
 
-          {/* pílulas proporcionais (rótulo + valor em <span>) */}
+          {/* pílulas proporcionais: label fixo + conteúdo flexível */}
           {dados.emailContato && (
             <div className="info-block">
-              <strong>Email:</strong><span>{dados.emailContato}</span>
+              <strong>Email:</strong>
+              <span>{dados.emailContato}</span>
             </div>
           )}
           {dados.empresa && (
             <div className="info-block">
-              <strong>Empresa:</strong><span>{dados.empresa}</span>
+              <strong>Empresa:</strong>
+              <span>{dados.empresa}</span>
             </div>
           )}
           {dados.biografia && (
-            <div className="info-block">
-              <strong>Bio:</strong><span>{dados.biografia}</span>
+            <div className="info-block multiline">
+              <strong>Bio:</strong>
+              <span className="info-text">{dados.biografia}</span>
             </div>
           )}
           {dados.chave_pix && (
             <div className="info-block">
-              <strong>Pix:</strong><span>{dados.chave_pix}</span>
+              <strong>Pix:</strong>
+              <span>{dados.chave_pix}</span>
             </div>
           )}
           {dados.whatsapp && (
             <div className="info-block">
-              <strong>WhatsApp:</strong><span>{dados.whatsapp}</span>
+              <strong>WhatsApp:</strong>
+              <span>{dados.whatsapp}</span>
             </div>
           )}
 
+          {/* ações do dono */}
           {isOwner && (
             <>
-              <button style={{ marginBottom: 10, marginTop: 10 }} onClick={() => navigate(`/card/edit/${dados.card_id}`)}>
+              <button
+                style={{ marginBottom: 10, marginTop: 10 }}
+                onClick={() => navigate(`/card/edit/${dados.card_id}`)}
+              >
                 Editar Cartão
               </button>
               <button
-                style={{ marginBottom: 18, background: "#b30d0d", color: "#fff", borderRadius: 8, border: "none", padding: "8px 20px", cursor: "pointer" }}
+                style={{
+                  marginBottom: 18,
+                  background: "#b30d0d",
+                  color: "#fff",
+                  borderRadius: 8,
+                  border: "none",
+                  padding: "8px 20px",
+                  cursor: "pointer",
+                }}
                 onClick={handleDelete}
               >
                 Excluir Cartão
@@ -199,45 +219,78 @@ const CardView = () => {
             </>
           )}
 
+          {/* link + QR */}
           <div style={{ margin: "20px 0", textAlign: "center" }}>
             <strong>Link do Cartão:</strong>
-            <input type="text" value={cardUrl} readOnly onClick={(e) => e.target.select()} />
-            <button onClick={() => { navigator.clipboard.writeText(cardUrl); alert("Link copiado para área de transferência!"); }}>
+            <input
+              type="text"
+              value={cardUrl}
+              readOnly
+              onClick={(e) => e.target.select()}
+              aria-label="Link público do cartão"
+            />
+            <button
+              onClick={() => {
+                navigator.clipboard.writeText(cardUrl);
+                alert("Link copiado para área de transferência!");
+              }}
+              aria-label="Copiar link do cartão"
+            >
               Copiar Link
             </button>
 
-            <div style={{ marginTop: 18, display: "flex", flexDirection: "column", alignItems: "center", gap: 8 }}>
+            <div
+              style={{
+                marginTop: 18,
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+                gap: 8,
+              }}
+            >
               <QRCode value={cardUrl} size={130} />
               <div style={{ fontSize: 13 }}>Escaneie o QR code para acessar este cartão!</div>
             </div>
           </div>
 
+          {/* redes sociais */}
           {(dados.instagram || dados.linkedin || dados.site) && (
             <>
-              <p className="section-title white" style={{ textAlign: "center", color: "#fff", fontWeight: 700 }}>Redes Sociais:</p>
+              <p className="section-title white" style={{ textAlign: "center", color: "#fff", fontWeight: 700 }}>
+                Redes Sociais:
+              </p>
               <div className="button-group">
                 {dados.instagram && (
                   <a href={dados.instagram} target="_blank" rel="noopener noreferrer">
-                    <button type="button"><img src="/insta.png" alt="Instagram" className="icon" /></button>
+                    <button type="button">
+                      <img src="/insta.png" alt="Instagram" className="icon" />
+                    </button>
                   </a>
                 )}
                 {dados.linkedin && (
                   <a href={dados.linkedin} target="_blank" rel="noopener noreferrer">
-                    <button type="button"><img src="/linkedin.png" alt="LinkedIn" className="icon" /></button>
+                    <button type="button">
+                      <img src="/linkedin.png" alt="LinkedIn" className="icon" />
+                    </button>
                   </a>
                 )}
                 {dados.site && (
                   <a href={dados.site} target="_blank" rel="noopener noreferrer">
-                    <button type="button"><img src="/website.png" alt="Site" className="icon" /></button>
+                    <button type="button">
+                      <img src="/website.png" alt="Site" className="icon" />
+                    </button>
                   </a>
                 )}
               </div>
             </>
           )}
 
+          {/* galeria */}
           {Array.isArray(dados.galeria) && dados.galeria.length > 0 && (
             <>
-              <p className="section-title white" style={{ textAlign: "center", color: "#fff", fontWeight: 700 }}>Galeria:</p>
+              <p className="section-title white" style={{ textAlign: "center", color: "#fff", fontWeight: 700 }}>
+                Galeria:
+              </p>
               <div className="gallery">
                 {dados.galeria.map((img, idx) => (
                   <img
