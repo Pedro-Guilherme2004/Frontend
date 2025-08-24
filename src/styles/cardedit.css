@@ -1,112 +1,45 @@
-/* ========= PAINEL DO EDIT (isolado) ========= */
-/* Use APENAS no CardEdit. Não afeta o CardView. */
-.edit-surface {
-  width: 100%;
-  max-width: 760px;          /* mesma largura do Edit */
-  margin: 24px auto;
-  padding: 24px;
-  background: #e9edf1;       /* painel claro do Edit */
-  border: 1px solid #d3d9e1;
-  border-radius: 12px;
-  box-shadow: 0 8px 24px rgba(0,0,0,.12);
-  color: #0b2239;            /* texto escuro como no Edit */
-  overflow: hidden;          /* nada vaza do painel */
+/* --- Reset só para a página de edição --- */
+.body-cardedit{
+  display:block !important;
+  padding-top:0 !important;
+  height:auto !important;
+  min-height:100dvh;
+  align-items:initial !important;
+  justify-content:initial !important;
+  overflow-x:hidden;
 }
 
-/* Título e nome dentro do painel */
-.edit-surface h2,
-.edit-surface .name {
-  margin: 0 0 12px;
-  color: #0b2239;
-  text-shadow: none;
-  font-weight: 700;
+/* Garante altura mínima do contêiner da página */
+.body-cardedit, .body-cardedit #root {
+  min-height: 100dvh;
 }
 
-/* Avatar dentro do Edit (se houver) */
-.edit-surface .avatar {
-  width: 160px;
-  height: 160px;
-  margin: 6px auto 10px;
-  border-radius: 50%;
-  object-fit: cover;
-  background: #f2f2f2;
-  border: 3px solid #fff;
-  box-shadow: 0 2px 8px rgba(0,0,0,.08);
+/* --- Layout do CardEdit --- */
+.edit-page{
+  min-height:100dvh;
+  display:flex;
+  flex-direction:column;
+  width:100%;
 }
 
-/* Blocos informativos no estilo do Edit */
-.edit-surface .info-block {
-  background: #f6f8fb;
-  border: 1px solid #d7dee6;
-  border-radius: 8px;
-  padding: 10px 12px;
-  margin-top: 10px;
-  font-size: 0.98rem;
-  font-weight: 600;
-  text-align: left;
-  color: #0b2239;
-  box-shadow: none;
+.edit-main{
+  flex:1;
+  display:flex;
+  justify-content:center;
+  align-items:flex-start;
+  padding:2rem 1rem;
 }
 
-/* QR centralizado (se você usar no Edit) */
-.qr-wrapper {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 8px;
-  margin-top: 14px;
-}
-
-/* Botões dentro do Edit */
-.edit-surface .button-group {
-  justify-content: center;
-  flex-wrap: wrap;
-  gap: 12px;
-  margin-top: 12px;
-}
-
-.edit-surface .button-group button {
-  width: 72px;
-  height: 72px;
-  border-radius: 14px;
-  border: 1px solid rgba(0,0,0,.08);
-  background: rgba(255,255,255,.7);
-  transition: transform .15s ease;
-}
-
-.edit-surface .button-group button:hover { transform: translateY(-2px); }
-.edit-surface .button-group button img.icon { width: 36px; height: 36px; }
-
-/* Inputs de link ocupam a largura do painel */
-.edit-surface input[type="text"][readonly] {
-  width: 100%;
-  box-sizing: border-box;
-}
-
-/* Garantia de que imagens não “vazam” dentro do Edit */
-.edit-surface img {
-  max-width: 100%;
-  height: auto;
-  display: block;
-}
-
-/* ====== CardView (verde) não muda ====== */
-.border-type1 {
-  /* (mantenha o que você já tem) */
-  overflow: hidden;          /* importante para não estourar bordas */
-}
-
-/* Thumbs da galeria no CardView */
-.gallery {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
-  gap: 10px;
-  margin-top: 8px;
-}
-.gallery-img {
-  width: 100%;
-  height: 110px;
-  object-fit: cover;
-  border-radius: 10px;
-  box-shadow: 0 1px 4px rgba(0,0,0,.15);
+/* Rodapé no fim da página (sem sobrepor o card) */
+.edit-footer{
+  margin-top:auto;
+  width:100%;
+  text-align:center;
+  padding:14px 12px;
+  color:#fff;
+  background:linear-gradient(90deg,rgba(0,0,0,.28),rgba(0,0,0,.18));
+  border-top:1px solid rgba(255,255,255,.08);
+  font-size:.95rem;
+  position:relative; /* evita pegar qualquer 'fixed' herdado */
+  z-index:1;
 }
