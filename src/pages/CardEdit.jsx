@@ -6,7 +6,7 @@ import "../styles/cardedit.css"; // .edit-page / .edit-main / .edit-surface / .e
 
 const backendUrl = "https://geticard.onrender.com";
 
-// Normaliza qualquer caminho de imagem vindo do backend
+// Normaliza qualquer caminho de imagem vindo do backend para PREVIEW
 const normalizeImgUrl = (raw) => {
   if (!raw) return "";
   let s = String(raw).trim().replace(/\\/g, "/"); // \ -> /
@@ -29,9 +29,10 @@ const CardEdit = () => {
     linkedin: "",
     site: "",
     chave_pix: "",
-    galeria: [],
-    foto_perfil: "",
+    galeria: [],        // mantém como veio do backend (sem enviar no PUT)
+    foto_perfil: "",    // idem
   });
+  const [galeriaPreview, setGaleriaPreview] = useState([]); // só para exibir
   const [novaFoto, setNovaFoto] = useState(null);
   const [novaGaleria, setNovaGaleria] = useState([]);
   const [mensagem, setMensagem] = useState("");
@@ -39,6 +40,12 @@ const CardEdit = () => {
   const [loading, setLoading] = useState(true);
 
   const token = localStorage.getItem("access_token");
+
+  // Isola CSS do Edit (fixa rodapé)
+  useEffect(() => {
+    document.body.classList.add("body-cardedit");
+    return () => document.body.classList.remove("body-cardedit");
+  }, []);
 
   useEffect(() => {
     const fetchCard = async () => {
@@ -50,12 +57,10 @@ const CardEdit = () => {
         setDados((prev) => ({
           ...prev,
           ...payload,
-          // garante que a galeria é sempre um array de strings normalizadas
-          galeria: Array.isArray(payload.galeria)
-            ? payload.galeria.map((g) => normalizeImgUrl(g))
-            : [],
-          // mantém o valor bruto (para enviar) mas já teremos preview normalizado
         }));
+        // Monta somente o preview da galeria com URLs normalizadas
+        const gal = Array.isArray(payload.galeria) ? payload.galeria : [];
+        setGaleriaPreview(gal.map(normalizeImgUrl));
       } catch {
         setErro("Erro ao carregar cartão.");
       } finally {
@@ -65,13 +70,9 @@ const CardEdit = () => {
     fetchCard();
   }, [id, token]);
 
-  const handleChange = (e) =>
-    setDados({ ...dados, [e.target.name]: e.target.value });
-
+  const handleChange = (e) => setDados({ ...dados, [e.target.name]: e.target.value });
   const handleFotoChange = (e) => setNovaFoto(e.target.files[0]);
-
-  const handleGalleryChange = (e) =>
-    setNovaGaleria(Array.from(e.target.files));
+  const handleGalleryChange = (e) => setNovaGaleria(Array.from(e.target.files));
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -90,11 +91,19 @@ const CardEdit = () => {
       formData.append("site", dados.site);
       formData.append("chave_pix", dados.chave_pix);
 
-      // Só envia foto nova se realmente trocou
-      if (novaFoto) formData.append("foto_perfil", novaFoto);
+      // Se não trocou a foto, avisa backend para manter (se aceitar)
+      if (novaFoto) {
+        formData.append("foto_perfil", novaFoto);
+      } else {
+        formData.append("foto_keep", "1");
+      }
 
-      // Só envia novas imagens de galeria se selecionou
-      for (let file of novaGaleria) formData.append("galeria", file);
+      // Se não enviou novas imagens, avisa backend para manter a galeria atual (se aceitar)
+      if (novaGaleria.length > 0) {
+        for (let file of novaGaleria) formData.append("galeria", file);
+      } else {
+        formData.append("galeria_keep", "1");
+      }
 
       await api.put(`/card/${id}`, formData, {
         headers: {
@@ -106,11 +115,7 @@ const CardEdit = () => {
       setMensagem("Cartão atualizado com sucesso!");
       navigate(`/card/view/${id}`);
     } catch (error) {
-      setErro(
-        error?.response?.data?.error ||
-          error?.message ||
-          "Erro ao atualizar cartão."
-      );
+      setErro(error?.response?.data?.error || error?.message || "Erro ao atualizar cartão.");
     }
   };
 
@@ -129,17 +134,12 @@ const CardEdit = () => {
               <h2>Editar Cartão</h2>
               {mensagem && <p style={{ color: "green" }}>{mensagem}</p>}
 
-              {/* Avatar atual (URL normalizada) */}
+              {/* Avatar atual (URL normalizada para preview) */}
               {fotoAtual && (
                 <img
                   src={fotoAtual}
                   alt="Foto atual"
-                  style={{
-                    maxWidth: 200,
-                    marginBottom: "1rem",
-                    display: "block",
-                    borderRadius: 12,
-                  }}
+                  style={{ maxWidth: 200, marginBottom: "1rem", display: "block", borderRadius: 12 }}
                 />
               )}
 
@@ -148,13 +148,7 @@ const CardEdit = () => {
               <input type="file" accept="image/*" onChange={handleFotoChange} />
 
               {/* Campos */}
-              <InputField
-                label="Nome"
-                name="nome"
-                value={dados.nome}
-                onChange={handleChange}
-              />
-
+              <InputField label="Nome" name="nome" value={dados.nome} onChange={handleChange} />
               <div style={{ marginBottom: "1rem" }}>
                 <label style={{ fontWeight: "bold" }}>Biografia</label>
                 <textarea
@@ -165,56 +159,18 @@ const CardEdit = () => {
                   style={{ width: "100%", padding: "6px" }}
                 />
               </div>
+              <InputField label="Empresa" name="empresa" value={dados.empresa} onChange={handleChange} />
+              <InputField label="WhatsApp" name="whatsapp" value={dados.whatsapp} onChange={handleChange} />
+              <InputField label="Email para contato" name="emailContato" value={dados.emailContato} onChange={handleChange} />
+              <InputField label="Instagram" name="instagram" value={dados.instagram} onChange={handleChange} />
+              <InputField label="LinkedIn" name="linkedin" value={dados.linkedin} onChange={handleChange} />
+              <InputField label="Site Personalizado" name="site" value={dados.site} onChange={handleChange} />
+              <InputField label="Chave Pix" name="chave_pix" value={dados.chave_pix} onChange={handleChange} />
 
-              <InputField
-                label="Empresa"
-                name="empresa"
-                value={dados.empresa}
-                onChange={handleChange}
-              />
-              <InputField
-                label="WhatsApp"
-                name="whatsapp"
-                value={dados.whatsapp}
-                onChange={handleChange}
-              />
-              <InputField
-                label="Email para contato"
-                name="emailContato"
-                value={dados.emailContato}
-                onChange={handleChange}
-              />
-              <InputField
-                label="Instagram"
-                name="instagram"
-                value={dados.instagram}
-                onChange={handleChange}
-              />
-              <InputField
-                label="LinkedIn"
-                name="linkedin"
-                value={dados.linkedin}
-                onChange={handleChange}
-              />
-              <InputField
-                label="Site Personalizado"
-                name="site"
-                value={dados.site}
-                onChange={handleChange}
-              />
-              <InputField
-                label="Chave Pix"
-                name="chave_pix"
-                value={dados.chave_pix}
-                onChange={handleChange}
-              />
-
-              {/* Galeria atual (preview com URLs normalizadas) */}
-              {Array.isArray(dados.galeria) && dados.galeria.length > 0 && (
+              {/* Galeria atual (apenas preview) */}
+              {galeriaPreview.length > 0 && (
                 <div style={{ margin: "10px 0" }}>
-                  <label style={{ fontWeight: 700, display: "block" }}>
-                    Galeria atual:
-                  </label>
+                  <label style={{ fontWeight: 700, display: "block" }}>Galeria atual:</label>
                   <div
                     style={{
                       display: "grid",
@@ -223,10 +179,10 @@ const CardEdit = () => {
                       marginTop: 6,
                     }}
                   >
-                    {dados.galeria.map((g, i) => (
+                    {galeriaPreview.map((g, i) => (
                       <img
                         key={i}
-                        src={normalizeImgUrl(g)}
+                        src={g}
                         alt={`galeria-${i}`}
                         style={{
                           width: "100%",
@@ -246,12 +202,7 @@ const CardEdit = () => {
               <div>
                 <label>Adicionar novas fotos (produtos):</label>
                 <br />
-                <input
-                  type="file"
-                  accept="image/*"
-                  multiple
-                  onChange={handleGalleryChange}
-                />
+                <input type="file" accept="image/*" multiple onChange={handleGalleryChange} />
                 <br />
                 <br />
               </div>
@@ -262,9 +213,7 @@ const CardEdit = () => {
         </div>
       </main>
 
-      <footer className="edit-footer">
-        © 2025 GETICARD — Editando seu cartão
-      </footer>
+      <footer className="edit-footer">© 2025 GETICARD — Editando seu cartão</footer>
     </div>
   );
 };

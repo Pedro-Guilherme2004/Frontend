@@ -1,45 +1,64 @@
-/* --- Reset só para a página de edição --- */
-.body-cardedit{
-  display:block !important;
-  padding-top:0 !important;
-  height:auto !important;
-  min-height:100dvh;
-  align-items:initial !important;
-  justify-content:initial !important;
-  overflow-x:hidden;
+/* --- Reset só para a página de edição (classe aplicada no <body>) --- */
+body.body-cardedit{
+  display: block !important;
+  padding-top: 0 !important;
+
+  /* Altura mínima confiável (fallback + novas unidades) */
+  min-height: 100vh;
+  min-height: 100dvh;
+  min-height: 100svh;
+
+  height: auto !important;
+  align-items: normal !important;
+  justify-content: normal !important;
+
+  overflow-x: hidden;
 }
 
-/* Garante altura mínima do contêiner da página */
-.body-cardedit, .body-cardedit #root {
+/* Garante que o contêiner raiz também ocupe a altura toda */
+body.body-cardedit #root{
+  display: block;
+  width: 100%;
+  min-height: 100vh;
   min-height: 100dvh;
+  min-height: 100svh;
 }
 
 /* --- Layout do CardEdit --- */
 .edit-page{
-  min-height:100dvh;
-  display:flex;
-  flex-direction:column;
-  width:100%;
+  /* página inteira vira um flex-container vertical */
+  min-height: 100vh;
+  min-height: 100dvh;
+  min-height: 100svh;
+
+  display: flex;
+  flex-direction: column;
+  width: 100%;
 }
 
 .edit-main{
-  flex:1;
-  display:flex;
-  justify-content:center;
-  align-items:flex-start;
-  padding:2rem 1rem;
+  /* ocupa o espaço entre topo e rodapé */
+  flex: 1 1 auto;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  padding: 2rem 1rem;
+  width: 100%;
 }
 
 /* Rodapé no fim da página (sem sobrepor o card) */
 .edit-footer{
-  margin-top:auto;
-  width:100%;
-  text-align:center;
-  padding:14px 12px;
-  color:#fff;
-  background:linear-gradient(90deg,rgba(0,0,0,.28),rgba(0,0,0,.18));
-  border-top:1px solid rgba(255,255,255,.08);
-  font-size:.95rem;
-  position:relative; /* evita pegar qualquer 'fixed' herdado */
-  z-index:1;
+  flex-shrink: 0;              /* nunca encolher */
+  margin-top: auto;            /* empurra para o final */
+
+  width: 100%;
+  text-align: center;
+  padding: 14px 12px;
+  color: #fff;
+  background: linear-gradient(90deg, rgba(0,0,0,.28), rgba(0,0,0,.18));
+  border-top: 1px solid rgba(255,255,255,.08);
+  font-size: .95rem;
+
+  position: relative !important; /* neutraliza qualquer fixed herdado */
+  z-index: 1;
 }
